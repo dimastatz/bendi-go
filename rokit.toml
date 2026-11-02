@@ -1,0 +1,6 @@
+# Pinned tool versions. Install them with `rokit install`.
+
+[tools]
+luau = "luau-lang/luau@0.743"
+selene = "Kampfkarren/selene@0.32.0"
+stylua = "JohnnyMorganz/StyLua@2.6.0"
