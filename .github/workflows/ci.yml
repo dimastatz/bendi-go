@@ -24,5 +24,8 @@ jobs:
       - name: Lint
         run: selene .
 
+      - name: Build place file
+        run: rojo build default.project.json -o bendi-go.rbxl
+
       - name: Unit tests with 95% coverage
         run: scripts/test.sh

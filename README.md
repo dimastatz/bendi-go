@@ -37,17 +37,38 @@ Bendi Go is built by Ben &amp; Dima, a father-and-son team, as a way to learn ga
 Before working on Bendi Go, install:
 
 - **Roblox Studio**: download from [create.roblox.com](https://create.roblox.com/)
-- **Rojo**: see the [Rojo installation guide](https://rojo.space/docs/v7/getting-started/installation/), including the Roblox Studio plugin
+- **Rokit**: the toolchain manager that installs the pinned versions of Rojo, StyLua, Selene, and Luau. See the [Rokit installation guide](https://github.com/rojo-rbx/rokit#installation)
+- **Rojo Studio plugin**: see the [Rojo installation guide](https://rojo.space/docs/v7/getting-started/installation/)
 
 ### How To Use It
 
 ```bash
-# Clone the repository
+# Clone the repository and install the tools
 git clone https://github.com/dimastatz/bendi-go.git
 cd bendi-go
+rokit install
+
+# Build the place file, then live-sync code changes into Studio
+rojo build -o bendi-go.rbxl
+rojo serve
 ```
 
-The project is in its early days, and the game code and Rojo project file aren't in the repo yet. Build and run steps will be added here as soon as they exist.
+Open `bendi-go.rbxl` in Roblox Studio, click **Connect** in the Rojo plugin, then press **Play**. You'll be put in your Bendi car:
+
+| Key | Action |
+| :-- | :----- |
+| W or Up arrow | Drive forward |
+| S or Down arrow | Brake, then reverse |
+| A / D or Left / Right arrows | Steer |
+| Space | Brake |
+
+Before opening a pull request, run the same checks as CI:
+
+```bash
+stylua --check .   # formatting
+selene .           # lint
+scripts/test.sh    # unit tests with 95% coverage
+```
 
 ## License
 

@@ -12,3 +12,8 @@ profile.svg
 
 # Time trace
 trace.json
+
+# Rojo build output
+*.rbxl
+*.rbxlx
+sourcemap.json
