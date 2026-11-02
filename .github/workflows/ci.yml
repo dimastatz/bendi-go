@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  checks:
+    name: Format, lint, and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install tools from rokit.toml
+        uses: CompeyDev/setup-rokit@v0.2.1
+        with:
+          version: v1.2.0
+          cache: true
+
+      - name: Check formatting
+        run: stylua --check .
+
+      - name: Lint
+        run: selene .
+
+      - name: Unit tests with 95% coverage
+        run: scripts/test.sh
