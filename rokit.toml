@@ -2,5 +2,6 @@
 
 [tools]
 luau = "luau-lang/luau@0.743"
+rojo = "rojo-rbx/rojo@7.7.1"
 selene = "Kampfkarren/selene@0.32.0"
 stylua = "JohnnyMorganz/StyLua@2.6.0"

@@ -1,0 +1,23 @@
+{
+  "name": "bendi-go",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "Core": {
+        "$path": "src/core"
+      }
+    },
+    "ServerScriptService": {
+      "Server": {
+        "$path": "src/server"
+      }
+    },
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "Client": {
+          "$path": "src/client"
+        }
+      }
+    }
+  }
+}
