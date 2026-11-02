@@ -48,14 +48,11 @@ function CarPhysics.step(speed: number, input: Input, dt: number, tuning: Tuning
 	local throttle = math.clamp(input.throttle, -1, 1)
 	local steer = math.clamp(input.steer, -1, 1)
 
+	-- Pressing against the direction the car is rolling brakes first, then drives the other way once stopped.
+	local pressingAgainstMotion = throttle * speed < 0
+
 	local newSpeed
-	if input.brake then
-		newSpeed = approach(speed, 0, t.brakeDeceleration * dt)
-	elseif throttle > 0 and speed < 0 then
-		-- Pressing forward while rolling backward brakes first.
-		newSpeed = approach(speed, 0, t.brakeDeceleration * dt)
-	elseif throttle < 0 and speed > 0 then
-		-- Pressing back while rolling forward brakes first, then reverses once stopped.
+	if input.brake or pressingAgainstMotion then
 		newSpeed = approach(speed, 0, t.brakeDeceleration * dt)
 	elseif throttle > 0 then
 		newSpeed = approach(speed, t.maxForwardSpeed * throttle, t.acceleration * dt)
