@@ -2,14 +2,16 @@
 -- Each player's car is rebuilt when their character respawns and removed when they leave.
 
 local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local TownLayout = require(ReplicatedStorage.Core.TownLayout)
 
 local CarBuilder = require(script.Parent.CarBuilder)
+local CollisionGroups = require(script.Parent.CollisionGroups)
 
 local CarSpawner = {}
 
--- Cars spawn side by side in a row, one slot per player, so they never start on top of each other.
-local SLOT_SPACING = 16
-local FIRST_SLOT = CFrame.new(0, 0, 50)
+-- Each player gets a spawn slot, and each slot is its own spot on a street, so cars never start on top of each other.
 local RESEAT_DELAY = 0.5
 
 local cars: { [Player]: Model } = {}
@@ -32,9 +34,9 @@ local function takeSlot(player: Player): number
 end
 
 local function slotOrigin(slot: number): CFrame
-	-- Alternate slots left and right of the first one: 0, +1, -1, +2, -2, ...
-	local index = if slot % 2 == 0 then slot / 2 else -(slot - 1) / 2
-	return FIRST_SLOT * CFrame.new(index * SLOT_SPACING, 0, 0)
+	local pose = TownLayout.spawnPose(slot)
+	local position = Vector3.new(pose.x, 0, pose.z)
+	return CFrame.lookAt(position, position + Vector3.new(pose.dirX, 0, pose.dirZ))
 end
 
 local function removeCar(player: Player)
@@ -55,10 +57,12 @@ end
 
 local function onCharacterAdded(player: Player, character: Model)
 	removeCar(player)
+	CollisionGroups.addPlayerParts(character)
 
 	local humanoid = character:WaitForChild("Humanoid") :: Humanoid
 	local car = CarBuilder.build(slotOrigin(takeSlot(player)))
 	car.Name = `BendiCar_{player.Name}`
+	CollisionGroups.addPlayerParts(car)
 	car.Parent = workspace
 	cars[player] = car
 

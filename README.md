@@ -53,14 +53,17 @@ rojo build -o bendi-go.rbxl
 rojo serve
 ```
 
-Open `bendi-go.rbxl` in Roblox Studio, click **Connect** in the Rojo plugin, then press **Play**. You'll be put in your Bendi car:
+Open `bendi-go.rbxl` in Roblox Studio, click **Connect** in the Rojo plugin, then press **Play**. You'll be put in your Bendi car in a small Israeli neighborhood:
 
-| Key | Action |
-| :-- | :----- |
-| W or Up arrow | Drive forward |
-| S or Down arrow | Brake, then reverse |
-| A / D or Left / Right arrows | Steer |
-| Space | Brake |
+| Control | Keyboard | Gamepad | Touch |
+| :------ | :------- | :------ | :---- |
+| Drive forward | W or Up arrow | Right trigger | Gas pedal |
+| Brake, then reverse | S or Down arrow | Left trigger | Brake pedal |
+| Steer | A / D or Left / Right arrows | Left stick | ◀ ▶ buttons |
+| Brake | Space | A or B | |
+| Reset car | R or the Reset car button | Y | Reset car button |
+
+One stud is 0.28 m, so the car's top speed of 70 km/h is about 69 studs per second. All speeds go through `src/core/Units.luau`.
 
 Before opening a pull request, run the same checks as CI:
 

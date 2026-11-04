@@ -1,5 +1,7 @@
-local TestMap = require(script.Parent.TestMap)
+local CollisionGroups = require(script.Parent.CollisionGroups)
+local TownBuilder = require(script.Parent.TownBuilder)
 local CarSpawner = require(script.Parent.CarSpawner)
 
-TestMap.build()
+CollisionGroups.setup()
+TownBuilder.build()
 CarSpawner.start()
