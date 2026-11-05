@@ -65,6 +65,8 @@ Open `bendi-go.rbxl` in Roblox Studio, click **Connect** in the Rojo plugin, the
 
 Four crossings have Israeli traffic lights (red and yellow, green, flashing green, yellow, red). Stop before the white line at a red light and wait for green to earn a star. Light timing is set in `src/core/TrafficLightConfig.luau`.
 
+Town streets are 50 km/h, and a residential street and the school street are 30 km/h, each marked with a speed limit sign. The speedometer at the bottom of the screen shows your speed and the limit. Drive a whole street without going more than 3 km/h over the limit to earn a star.
+
 One stud is 0.28 m, so the car's top speed of 70 km/h is about 69 studs per second. All speeds go through `src/core/Units.luau`.
 
 Before opening a pull request, run the same checks as CI:

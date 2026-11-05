@@ -99,4 +99,13 @@ test("lots next to the roundabout space keep their trees out of it", function()
 	expectNear(TownLayout.ROUNDABOUT.halfSize, Rect.width(TownLayout.ROUNDABOUT_SPACE) / 2)
 end)
 
+test("the school block is left for the school", function()
+	for _, lot in TownLayout.lots() do
+		local buildings = TownProps.forLot(lot)
+		for _, building in buildings do
+			expectEqual(Rect.overlaps(building.rect, TownLayout.SCHOOL_BLOCK), false)
+		end
+	end
+end)
+
 TestKit.finish()

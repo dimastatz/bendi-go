@@ -31,6 +31,30 @@ Strings.TEXT = {
 		en = "Red and yellow together means get ready, but don't go yet. Wait for green!",
 		he = "אדום וצהוב ביחד אומר להתכונן, אבל עוד לא נוסעים. מחכים לירוק!",
 	},
+
+	-- Speed limits (PRD-003)
+	kmh = { en = "km/h", he = "קמ״ש" },
+	school = { en = "School", he = "בית ספר" },
+	slowZone = {
+		en = "This street is 30! Streets where people live and kids play are slower, so everyone stays safe.",
+		he = "ברחוב הזה מותר 30! ברחובות שבהם גרים אנשים וילדים משחקים נוסעים לאט, כדי שכולם יהיו בטוחים.",
+	},
+	tooFastTown = {
+		en = "This street is 50. Slow down a little!",
+		he = "ברחוב הזה מותר 50. להאט קצת!",
+	},
+	tooFastResidential = {
+		en = "This street is 30. Slow down, people live here!",
+		he = "ברחוב הזה מותר 30. להאט, גרים כאן אנשים!",
+	},
+	tooFastSchool = {
+		en = "This street is 30. Slow down, there's a school here!",
+		he = "ברחוב הזה מותר 30. להאט, יש כאן בית ספר!",
+	},
+	speedStar = {
+		en = "Nice and steady! You kept to the speed limit on that street.",
+		he = "יפה מאוד! שמרת על המהירות המותרת ברחוב הזה.",
+	},
 } :: { [string]: { [string]: string } }
 
 -- Returns the language to show for the given locale ids (like "he-il" or "en-us"). The first one that is a

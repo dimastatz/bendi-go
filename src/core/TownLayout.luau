@@ -54,6 +54,11 @@ local RING = Rect.new(
 -- The whole map. Invisible walls stand along its edges.
 TownLayout.BOUNDS = Rect.inset(RING, -TownLayout.BORDER_WIDTH)
 
+-- The school (PRD-003) fills the block between x = -180 and x = 0, south of z = 90. Its building faces the
+-- school zone street at x = 0.
+TownLayout.SCHOOL_BLOCK = Rect.new(-180 + HALF_ROAD, 90 + HALF_ROAD, 0 - HALF_ROAD, 270 - HALF_ROAD)
+TownLayout.SCHOOL_BUILDING = Rect.new(-75, 128, -35, 232)
+
 -- Every street, from one side of the ring road to the other.
 function TownLayout.streets(): { Street }
 	local streets = {}
@@ -66,8 +71,13 @@ function TownLayout.streets(): { Street }
 	return streets
 end
 
--- The pieces of street between two neighboring crossings.
+local segmentList: { Street }? = nil
+
+-- The pieces of street between two neighboring crossings. The list is shared, so don't change it.
 function TownLayout.segments(): { Street }
+	if segmentList then
+		return segmentList
+	end
 	local segments = {}
 	for _, z in STREETS_Z do
 		for i = 1, #STREETS_X - 1 do
@@ -79,7 +89,37 @@ function TownLayout.segments(): { Street }
 			table.insert(segments, { alongX = false, at = x, from = STREETS_Z[i], to = STREETS_Z[i + 1] })
 		end
 	end
+	segmentList = segments
 	return segments
+end
+
+-- Where the road between the two crossings of `segment` starts and ends: at the edge of each crossing, or of the
+-- roundabout space.
+function TownLayout.segmentEnds(segment: Street): (number, number)
+	local function clearance(along: number): number
+		local x, z = segment.at, along
+		if segment.alongX then
+			x, z = along, segment.at
+		end
+		return if Rect.contains(TownLayout.ROUNDABOUT_SPACE, x, z) then TownLayout.ROUNDABOUT.halfSize else HALF_ROAD
+	end
+	return segment.from + clearance(segment.from), segment.to - clearance(segment.to)
+end
+
+-- The segment (an index into TownLayout.segments()) whose road the point is on, and how far along the street it
+-- is. Crossings and the roundabout space are not part of any segment, so they return nil.
+function TownLayout.segmentAt(x: number, z: number): (number?, number)
+	for index, segment in TownLayout.segments() do
+		local along, across = z, x
+		if segment.alongX then
+			along, across = x, z
+		end
+		local first, last = TownLayout.segmentEnds(segment)
+		if math.abs(across - segment.at) <= HALF_ROAD and along > first and along < last then
+			return index, along
+		end
+	end
+	return nil, 0
 end
 
 -- Crossings where four streets meet, not counting the ring road or the roundabout space.

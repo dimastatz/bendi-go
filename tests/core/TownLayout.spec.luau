@@ -138,4 +138,21 @@ test("reset still works when the car points straight up", function()
 	expectNear(math.abs(pose.dirX) + math.abs(pose.dirZ), 1)
 end)
 
+test("segmentAt finds the street a point is on and how far along it is", function()
+	local index, along = TownLayout.segmentAt(-5.5, 10)
+	local segment = TownLayout.segments()[index :: number]
+	expectEqual(segment.alongX, false)
+	expectEqual(segment.at, 0)
+	expectEqual(along, 10)
+	expectEqual(TownLayout.segmentAt(0, 90), nil) -- a crossing
+	expectEqual(TownLayout.segmentAt(-90, 0), nil) -- a block
+end)
+
+test("segments next to the roundabout space end at its edge", function()
+	local first, last = TownLayout.segmentEnds({ alongX = true, at = 90, from = 0, to = 180 })
+	expectEqual(first, TownLayout.ROAD_WIDTH / 2)
+	expectEqual(last, 180 - TownLayout.ROUNDABOUT.halfSize)
+	expectEqual(TownLayout.segmentAt(150, 95), nil)
+end)
+
 TestKit.finish()
