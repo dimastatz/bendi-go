@@ -1,0 +1,52 @@
+local TestKit = require("../TestKit")
+local Path = require("../../src/core/Path")
+
+local test, expectEqual, expectNear = TestKit.test, TestKit.expectEqual, TestKit.expectNear
+
+print("Path")
+
+test("an open path is as long as its pieces", function()
+	local path = Path.new({ { 0, 0 }, { 10, 0 }, { 10, 5 } }, false)
+	expectEqual(path.total, 15)
+end)
+
+test("a closed path also goes back to the start", function()
+	local path = Path.new({ { 0, 0 }, { 10, 0 }, { 10, 10 }, { 0, 10 } }, true)
+	expectEqual(path.total, 40)
+end)
+
+test("sample finds the position and direction along the path", function()
+	local path = Path.new({ { 0, 0 }, { 10, 0 }, { 10, 10 } }, false)
+	local x, z, dirX, dirZ = Path.sample(path, 4)
+	expectEqual(x, 4)
+	expectEqual(z, 0)
+	expectEqual(dirX, 1)
+	expectEqual(dirZ, 0)
+	x, z, dirX, dirZ = Path.sample(path, 15)
+	expectEqual(x, 10)
+	expectEqual(z, 5)
+	expectEqual(dirX, 0)
+	expectEqual(dirZ, 1)
+end)
+
+test("a closed path wraps around and an open one stops at its ends", function()
+	local loop = Path.new({ { 0, 0 }, { 10, 0 }, { 10, 10 }, { 0, 10 } }, true)
+	local x, z = Path.sample(loop, 45)
+	expectNear(x, 5)
+	expectNear(z, 0)
+	x, z = Path.sample(loop, -5)
+	expectNear(x, 0)
+	expectNear(z, 5)
+	local line = Path.new({ { 0, 0 }, { 10, 0 } }, false)
+	expectEqual(Path.sample(line, 50), 10)
+	expectEqual(Path.sample(line, -50), 0)
+end)
+
+test("repeated points don't break sampling", function()
+	local path = Path.new({ { 0, 0 }, { 0, 0 }, { 10, 0 } }, false)
+	local x, _, dirX = Path.sample(path, 0)
+	expectEqual(x, 0)
+	expectEqual(dirX == 0 or dirX == 1, true)
+end)
+
+TestKit.finish()

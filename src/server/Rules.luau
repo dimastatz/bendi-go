@@ -6,16 +6,18 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
+local CrosswalkRule = require(ReplicatedStorage.Core.CrosswalkRule)
 local RedLightRule = require(ReplicatedStorage.Core.RedLightRule)
 local SpeedRule = require(ReplicatedStorage.Core.SpeedRule)
 local Stars = require(ReplicatedStorage.Core.Stars)
 
+local CarInfo = require(script.Parent.CarInfo)
 local CarSpawner = require(script.Parent.CarSpawner)
 
 local Rules = {}
 
 -- Every rule has newState() and update(state, car, now, world), which returns stars and tips.
-local RULES = { RedLightRule, SpeedRule }
+local RULES = { RedLightRule, SpeedRule, CrosswalkRule }
 
 local tipEvent = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("BendiTip") :: RemoteEvent
 
@@ -37,15 +39,7 @@ local function check(player: Player, states: { any }, stars: Stars.Stars, now: n
 		return
 	end
 
-	local look = base.CFrame.LookVector
-	local velocity = base.AssemblyLinearVelocity
-	local carInfo = {
-		x = base.Position.X,
-		z = base.Position.Z,
-		dirX = look.X,
-		dirZ = look.Z,
-		speed = Vector3.new(velocity.X, 0, velocity.Z).Magnitude,
-	}
+	local carInfo = CarInfo.fromBase(base)
 
 	for index, rule in RULES do
 		for _, event in rule.update(states[index], carInfo, now, world) do

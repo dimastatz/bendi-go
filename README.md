@@ -67,6 +67,8 @@ Four crossings have Israeli traffic lights (red and yellow, green, flashing gree
 
 Town streets are 50 km/h, and a residential street and the school street are 30 km/h, each marked with a speed limit sign. The speedometer at the bottom of the screen shows your speed and the limit. Drive a whole street without going more than 3 km/h over the limit to earn a star.
 
+People walk around town and cross at four zebra crosswalks. Stop before the stripes and let them cross to earn a star. Pedestrians can never be hit: they step back to the curb, and your car is gently slowed.
+
 One stud is 0.28 m, so the car's top speed of 70 km/h is about 69 studs per second. All speeds go through `src/core/Units.luau`.
 
 Before opening a pull request, run the same checks as CI:

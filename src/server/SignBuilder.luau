@@ -114,6 +114,17 @@ local function triangle(
 	end
 end
 
+-- A plain square sign face, like the blue crosswalk sign.
+function SignBuilder.square(parent: Instance, face: CFrame, size: number, color: Color3)
+	makePart(parent, "Back", Vector3.new(size, size, 0.1), face * CFrame.new(0, 0, 0.1), BACK_COLOR)
+	makePart(parent, "Square", Vector3.new(size, size, 0.1), face, color)
+end
+
+-- A plain triangle on a sign face, pointing up.
+function SignBuilder.plainTriangle(parent: Instance, face: CFrame, size: number, color: Color3)
+	triangle(parent, face * CFrame.new(0, 0, -0.06), size, size * math.sqrt(3) / 2, color, false)
+end
+
 -- A triangular warning sign: red border and white inside, pointing up, or down for give way.
 function SignBuilder.triangle(parent: Instance, face: CFrame, size: number, pointsDown: boolean)
 	local height = size * math.sqrt(3) / 2

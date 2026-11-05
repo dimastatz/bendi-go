@@ -103,6 +103,18 @@ function TownProps.forLot(lot: TownLayout.Lot): ({ Building }, { Tree })
 	return buildings, trees
 end
 
+-- True if a car parked at `along` on `segment` would hide a crosswalk. Like near crossings, Israeli law says no
+-- parking within 12 m of a crosswalk.
+local function nearCrosswalk(segment: TownLayout.Street, along: number): boolean
+	for _, crosswalk in TownLayout.CROSSWALKS do
+		local onStreet = crosswalk.alongX == segment.alongX and crosswalk.at == segment.at
+		if onStreet and math.abs(crosswalk.along - along) < TownProps.PARKING_CLEARANCE then
+			return true
+		end
+	end
+	return false
+end
+
 -- Cars parked in the parking strips, facing the way traffic goes on their side of the street.
 function TownProps.parkedCars(): { ParkedCar }
 	local cars = {}
@@ -115,7 +127,11 @@ function TownProps.parkedCars(): { ParkedCar }
 			for _, direction in { 1, -1 } do
 				local pose = TownLayout.lanePose(segment, along, direction, offset)
 				local hash = TownProps.hash(pose.x, pose.z)
-				if hash % 3 == 0 and not Rect.contains(keepClear, pose.x, pose.z) then
+				if
+					hash % 3 == 0
+					and not Rect.contains(keepClear, pose.x, pose.z)
+					and not nearCrosswalk(segment, along)
+				then
 					table.insert(cars, { pose = pose, style = 1 + hash % TownProps.CAR_STYLES })
 				end
 			end

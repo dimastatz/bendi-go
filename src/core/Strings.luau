@@ -55,6 +55,20 @@ Strings.TEXT = {
 		en = "Nice and steady! You kept to the speed limit on that street.",
 		he = "יפה מאוד! שמרת על המהירות המותרת ברחוב הזה.",
 	},
+
+	-- Crosswalks (PRD-004)
+	pedestrianWaiting = {
+		en = "Someone wants to cross! Stop before the stripes and let them go first.",
+		he = "מישהו רוצה לחצות! עוצרים לפני הפסים ונותנים לו לעבור קודם.",
+	},
+	didntStopForPedestrian = {
+		en = "Someone was on the crosswalk! Always stop and let people cross first.",
+		he = "מישהו היה במעבר החציה! תמיד עוצרים ונותנים להולכי רגל לעבור קודם.",
+	},
+	crosswalkPraise = {
+		en = "Thank you for letting them cross!",
+		he = "תודה שנתת להם לחצות!",
+	},
 } :: { [string]: { [string]: string } }
 
 -- Returns the language to show for the given locale ids (like "he-il" or "en-us"). The first one that is a
