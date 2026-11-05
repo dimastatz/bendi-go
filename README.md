@@ -1,7 +1,7 @@
 <div align="center">
 <h1 align="center"> Bendi Go </h1>
 <h3>Learn Israeli Traffic Rules by Driving in Roblox</br></h3>
-<img src="https://img.shields.io/badge/Progress-5%25-red"> <img src="https://img.shields.io/badge/Feedback-Welcome-green">
+<img src="https://img.shields.io/badge/Progress-80%25-yellow"> <img src="https://img.shields.io/badge/Feedback-Welcome-green">
 </br>
 </br>
 <kbd>
@@ -68,6 +68,8 @@ Four crossings have Israeli traffic lights (red and yellow, green, flashing gree
 Town streets are 50 km/h, and a residential street and the school street are 30 km/h, each marked with a speed limit sign. The speedometer at the bottom of the screen shows your speed and the limit. Drive a whole street without going more than 3 km/h over the limit to earn a star.
 
 People walk around town and cross at four zebra crosswalks. Stop before the stripes and let them cross to earn a star. Pedestrians can never be hit: they step back to the curb, and your car is gently slowed.
+
+Other cars drive around town and follow the same rules. At the roundabout, give way to cars already going around; at the stop signs, stop completely before the line; at the give-way sign, let cars on the main road go first. Each earns a star.
 
 One stud is 0.28 m, so the car's top speed of 70 km/h is about 69 studs per second. All speeds go through `src/core/Units.luau`.
 
