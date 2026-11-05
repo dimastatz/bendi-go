@@ -59,6 +59,16 @@ TownLayout.BOUNDS = Rect.inset(RING, -TownLayout.BORDER_WIDTH)
 TownLayout.SCHOOL_BLOCK = Rect.new(-180 + HALF_ROAD, 90 + HALF_ROAD, 0 - HALF_ROAD, 270 - HALF_ROAD)
 TownLayout.SCHOOL_BUILDING = Rect.new(-75, 128, -35, 232)
 
+-- Zebra crosswalks (PRD-004), all in the middle of a block, away from traffic lights. Each is on a street (along X
+-- or along Z, at `at`) and centered at `along` on it. The first is in the school zone, in front of the school.
+TownLayout.CROSSWALK_WIDTH = 12
+TownLayout.CROSSWALKS = {
+	{ alongX = false, at = 0, along = 150 },
+	{ alongX = true, at = -90, along = -120 },
+	{ alongX = true, at = 90, along = 60 },
+	{ alongX = false, at = -180, along = -210 },
+}
+
 -- Every street, from one side of the ring road to the other.
 function TownLayout.streets(): { Street }
 	local streets = {}

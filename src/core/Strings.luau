@@ -55,6 +55,64 @@ Strings.TEXT = {
 		en = "Nice and steady! You kept to the speed limit on that street.",
 		he = "יפה מאוד! שמרת על המהירות המותרת ברחוב הזה.",
 	},
+
+	-- Crosswalks (PRD-004)
+	pedestrianWaiting = {
+		en = "Someone wants to cross! Stop before the stripes and let them go first.",
+		he = "מישהו רוצה לחצות! עוצרים לפני הפסים ונותנים לו לעבור קודם.",
+	},
+	didntStopForPedestrian = {
+		en = "Someone was on the crosswalk! Always stop and let people cross first.",
+		he = "מישהו היה במעבר החציה! תמיד עוצרים ונותנים להולכי רגל לעבור קודם.",
+	},
+	crosswalkPraise = {
+		en = "Thank you for letting them cross!",
+		he = "תודה שנתת להם לחצות!",
+	},
+
+	-- Roundabouts, stop signs, and give-way signs (PRD-005)
+	roundaboutFirst = {
+		en = "Cars already in the roundabout go first. Wait for them, then join!",
+		he = "מכוניות שכבר בכיכר עוברות ראשונות. מחכים להן, ואז נכנסים!",
+	},
+	didntYieldRoundabout = {
+		en = "Wait! Cars in the roundabout go first. Look left before you join.",
+		he = "רגע! מכוניות בכיכר עוברות ראשונות. מסתכלים שמאלה לפני שנכנסים.",
+	},
+	yieldedRoundabout = {
+		en = "Well done! You let the cars in the roundabout go first.",
+		he = "כל הכבוד! נתת למכוניות בכיכר לעבור קודם.",
+	},
+	clearRoundabout = {
+		en = "Nice! The roundabout was clear, so you could go.",
+		he = "יפה! הכיכר הייתה פנויה, אז אפשר היה להיכנס.",
+	},
+	giveWayFirst = {
+		en = "This sign means give way: cars on the main road go first. Wait for them!",
+		he = "התמרור הזה אומר לתת זכות קדימה: מכוניות בכביש הראשי עוברות ראשונות. מחכים להן!",
+	},
+	didntGiveWay = {
+		en = "Cars on the main road go first. Wait until they pass, then go.",
+		he = "מכוניות בכביש הראשי עוברות ראשונות. מחכים שיעברו, ואז נוסעים.",
+	},
+	yieldedGiveWay = {
+		en = "Well done! You let the other cars go first.",
+		he = "כל הכבוד! נתת למכוניות האחרות לעבור קודם.",
+	},
+	clearGiveWay = {
+		en = "Nice! The main road was clear, so you could go.",
+		he = "יפה! הכביש הראשי היה פנוי, אז אפשר היה לנסוע.",
+	},
+	stopSign = {
+		en = "A stop sign means a full stop before the line, every time. Then look both ways and go.",
+		he = "תמרור עצור אומר לעצור לגמרי לפני הקו, כל פעם. אחר כך מסתכלים לשני הכיוונים ונוסעים.",
+	},
+	rolledStop = {
+		en = "At a stop sign, stop completely before the line, even if the road looks empty.",
+		he = "בתמרור עצור עוצרים לגמרי לפני הקו, גם אם הכביש נראה ריק.",
+	},
+	stopPraise = { en = "Great full stop!", he = "עצירה מלאה, מצוין!" },
+	stopWord = { en = "STOP", he = "עצור" },
 } :: { [string]: { [string]: string } }
 
 -- Returns the language to show for the given locale ids (like "he-il" or "en-us"). The first one that is a

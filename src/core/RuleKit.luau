@@ -16,6 +16,25 @@ export type Event = { kind: "star", key: string, praise: string? } | { kind: "ti
 -- A car slower than this counts as stopped.
 RuleKit.STOP_SPEED = Units.kmhToStudsPerSecond(1)
 
+-- From a car's center to its front bumper.
+RuleKit.CAR_HALF_LENGTH = 7
+
+-- The car's front bumper, as a car of its own, so rules can check where the front of the car is.
+function RuleKit.front(car: Car): Car
+	local length = math.sqrt(car.dirX * car.dirX + car.dirZ * car.dirZ)
+	if length < 1e-6 then
+		return car
+	end
+	local reach = RuleKit.CAR_HALF_LENGTH / length
+	return {
+		x = car.x + car.dirX * reach,
+		z = car.z + car.dirZ * reach,
+		dirX = car.dirX,
+		dirZ = car.dirZ,
+		speed = car.speed,
+	}
+end
+
 -- A car that moved farther than this between two checks was reset, not driven.
 RuleKit.MAX_STEP = 40
 

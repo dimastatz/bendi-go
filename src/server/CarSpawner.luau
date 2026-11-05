@@ -87,6 +87,11 @@ local function onPlayerAdded(player: Player)
 	end
 end
 
+-- Every player's car, by player.
+function CarSpawner.allCars(): { [Player]: Model }
+	return cars
+end
+
 -- The player's current car, if they have one.
 function CarSpawner.getCar(player: Player): Model?
 	return cars[player]
