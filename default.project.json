@@ -5,6 +5,12 @@
     "ReplicatedStorage": {
       "Core": {
         "$path": "src/core"
+      },
+      "Remotes": {
+        "$className": "Folder",
+        "BendiTip": {
+          "$className": "RemoteEvent"
+        }
       }
     },
     "ServerScriptService": {

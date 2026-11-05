@@ -45,4 +45,25 @@ test("a Hebrew device wins over an English Roblox setting", function()
 	expectEqual(Strings.languageFor("en-us", "ru-ru"), "en")
 end)
 
+test("Hebrew is right to left and English is not", function()
+	expectEqual(Strings.isRightToLeft("he"), true)
+	expectEqual(Strings.isRightToLeft("en"), false)
+end)
+
+test("entries have one row per text, with English as the source", function()
+	local entries = Strings.entries()
+	local count = 0
+	for _ in Strings.TEXT do
+		count += 1
+	end
+	expectEqual(#entries, count)
+	for i, entry in entries do
+		expectEqual(entry.Source, Strings.TEXT[entry.Key].en)
+		expectEqual(entry.Values.he, Strings.TEXT[entry.Key].he)
+		if i > 1 then
+			expectEqual(entries[i - 1].Key < entry.Key, true)
+		end
+	end
+end)
+
 TestKit.finish()

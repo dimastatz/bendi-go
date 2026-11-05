@@ -87,6 +87,11 @@ local function onPlayerAdded(player: Player)
 	end
 end
 
+-- The player's current car, if they have one.
+function CarSpawner.getCar(player: Player): Model?
+	return cars[player]
+end
+
 function CarSpawner.start()
 	Players.PlayerAdded:Connect(onPlayerAdded)
 	for _, player in Players:GetPlayers() do

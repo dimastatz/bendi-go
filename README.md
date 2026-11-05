@@ -63,6 +63,8 @@ Open `bendi-go.rbxl` in Roblox Studio, click **Connect** in the Rojo plugin, the
 | Brake | Space | A or B | |
 | Reset car | R or the Reset car button | Y | Reset car button |
 
+Four crossings have Israeli traffic lights (red and yellow, green, flashing green, yellow, red). Stop before the white line at a red light and wait for green to earn a star. Light timing is set in `src/core/TrafficLightConfig.luau`.
+
 One stud is 0.28 m, so the car's top speed of 70 km/h is about 69 studs per second. All speeds go through `src/core/Units.luau`.
 
 Before opening a pull request, run the same checks as CI:

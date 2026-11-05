@@ -358,7 +358,7 @@ local function buildEdgeWalls(map: Instance)
 	end
 end
 
-function TownBuilder.build()
+function TownBuilder.build(): Folder
 	local map = Instance.new("Folder")
 	map.Name = "Town"
 
@@ -384,6 +384,7 @@ function TownBuilder.build()
 	spawnLocation.Parent = map
 
 	map.Parent = workspace
+	return map
 end
 
 return TownBuilder
