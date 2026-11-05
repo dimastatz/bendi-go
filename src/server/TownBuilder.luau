@@ -226,7 +226,8 @@ local function buildBuilding(parent: Instance, building: TownProps.Building)
 	model.Parent = parent
 end
 
-local function buildTree(parent: Instance, tree: TownProps.Tree)
+-- A palm or a round tree standing on a sidewalk or lawn. Also used for the roundabout's island.
+function TownBuilder.buildTree(parent: Instance, tree: TownProps.Tree)
 	-- Cylinders are round along their X axis, so trunks are turned to stand up.
 	local standUp = CFrame.Angles(0, 0, math.rad(90))
 	if tree.kind == "palm" then
@@ -298,7 +299,7 @@ local function buildLots(map: Instance)
 			buildBuilding(buildings, building)
 		end
 		for _, tree in lotTrees do
-			buildTree(trees, tree)
+			TownBuilder.buildTree(trees, tree)
 		end
 	end
 end

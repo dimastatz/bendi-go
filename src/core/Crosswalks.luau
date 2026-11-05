@@ -14,7 +14,7 @@ export type CrosswalkApproach = Approach.Approach & { crosswalk: number }
 local Crosswalks = {}
 
 Crosswalks.HALF_ROAD = TownLayout.ROAD_WIDTH / 2
-Crosswalks.CAR_HALF_LENGTH = 7 -- from a car's center to its front bumper
+Crosswalks.CAR_HALF_LENGTH = RuleKit.CAR_HALF_LENGTH
 Crosswalks.WATCH_DISTANCE = 100 -- cars farther than this from a crosswalk don't matter to pedestrians
 Crosswalks.SAFETY_MARGIN = 8 -- extra room on top of a car's braking distance
 
@@ -46,21 +46,8 @@ function Crosswalks.approaches(): { CrosswalkApproach }
 	return approaches
 end
 
--- The car's front bumper, as a car of its own, so rules can check where the front of the car is.
-function Crosswalks.front(car: RuleKit.Car): RuleKit.Car
-	local length = math.sqrt(car.dirX * car.dirX + car.dirZ * car.dirZ)
-	if length < 1e-6 then
-		return car
-	end
-	local reach = Crosswalks.CAR_HALF_LENGTH / length
-	return {
-		x = car.x + car.dirX * reach,
-		z = car.z + car.dirZ * reach,
-		dirX = car.dirX,
-		dirZ = car.dirZ,
-		speed = car.speed,
-	}
-end
+-- The car's front bumper (see RuleKit.front).
+Crosswalks.front = RuleKit.front
 
 -- How close a car driving at `speed` can come before it couldn't stop in time.
 function Crosswalks.stoppingDistance(speed: number): number

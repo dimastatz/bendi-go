@@ -10,6 +10,8 @@ local CrosswalkRule = require(ReplicatedStorage.Core.CrosswalkRule)
 local RedLightRule = require(ReplicatedStorage.Core.RedLightRule)
 local SpeedRule = require(ReplicatedStorage.Core.SpeedRule)
 local Stars = require(ReplicatedStorage.Core.Stars)
+local StopSignRule = require(ReplicatedStorage.Core.StopSignRule)
+local YieldRule = require(ReplicatedStorage.Core.YieldRule)
 
 local CarInfo = require(script.Parent.CarInfo)
 local CarSpawner = require(script.Parent.CarSpawner)
@@ -17,7 +19,7 @@ local CarSpawner = require(script.Parent.CarSpawner)
 local Rules = {}
 
 -- Every rule has newState() and update(state, car, now, world), which returns stars and tips.
-local RULES = { RedLightRule, SpeedRule, CrosswalkRule }
+local RULES = { RedLightRule, SpeedRule, CrosswalkRule, YieldRule, StopSignRule }
 
 local tipEvent = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("BendiTip") :: RemoteEvent
 
