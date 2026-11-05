@@ -80,6 +80,9 @@ function TownProps.forLot(lot: TownLayout.Lot): ({ Building }, { Tree })
 	local buildings, trees = {}, {}
 	for _, inner in lot.inner do
 		for _, cell in cells(inner) do
+			if Rect.overlaps(cell, TownLayout.SCHOOL_BLOCK) then
+				continue -- the school builder fills this block
+			end
 			local x, z = Rect.center(cell)
 			local hash = TownProps.hash(x, z)
 			local site = Rect.inset(cell, BUILDING_GAP)

@@ -16,9 +16,6 @@ TrafficLightConfig.ALL_RED = 2
 -- A flashing green light is on for this long, then off for this long.
 TrafficLightConfig.FLASH_INTERVAL = 0.5
 
--- The same light can give the same player a star at most this often (requirement 5).
-TrafficLightConfig.STAR_COOLDOWN = 60
-
 -- How far before the middle of the crossing the white stop line is painted, in studs. It leaves room for the
 -- crosswalk that PRD-004 adds between the stop line and the crossing.
 TrafficLightConfig.STOP_LINE_DISTANCE = 31

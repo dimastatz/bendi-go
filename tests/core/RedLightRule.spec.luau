@@ -1,6 +1,7 @@
 local TestKit = require("../TestKit")
 local Config = require("../../src/core/TrafficLightConfig")
 local RedLightRule = require("../../src/core/RedLightRule")
+local RuleKit = require("../../src/core/RuleKit")
 
 local test, expectEqual = TestKit.test, TestKit.expectEqual
 
@@ -12,11 +13,11 @@ local LANE_Z = -90 + 5.5 -- the right-hand lane for cars driving east (+X)
 local STOP_LINE = -180 - Config.STOP_LINE_DISTANCE
 
 -- A car driving east on the z = -90 street.
-local function eastbound(x: number, speed: number): RedLightRule.Car
+local function eastbound(x: number, speed: number): RuleKit.Car
 	return { x = x, z = LANE_Z, dirX = 1, dirZ = 0, speed = speed }
 end
 
-local function kinds(events: { RedLightRule.Event }): string
+local function kinds(events: { RuleKit.Event }): string
 	local names = {}
 	for _, event in events do
 		table.insert(names, if event.kind == "star" then "star" else event.tip)
@@ -53,14 +54,14 @@ test("every light crossing has four approaches, each with its stop line before t
 	for _, approach in approaches do
 		local crossing = Config.CROSSINGS[approach.crossing]
 		local center = if approach.alongX then crossing.x else crossing.z
-		expectEqual((center - approach.stopLine) * approach.direction, Config.STOP_LINE_DISTANCE)
+		expectEqual((center - approach.line) * approach.direction, Config.STOP_LINE_DISTANCE)
 	end
 end)
 
 test("a car in the right-hand lane heading toward the crossing is in an approach", function()
 	local approach = RedLightRule.findApproach(eastbound(STOP_LINE - 20, 10))
 	expectEqual(approach ~= nil, true)
-	local found = approach :: RedLightRule.Approach
+	local found = approach :: RedLightRule.LightApproach
 	expectEqual(found.crossing, 1)
 	expectEqual(found.alongX, true)
 	expectEqual(found.direction, 1)
@@ -69,7 +70,7 @@ end)
 test("approaches along Z work too", function()
 	-- Driving north (-Z) toward z = -90, in the right-hand lane (+X side).
 	local car = { x = -180 + 5.5, z = -90 + Config.STOP_LINE_DISTANCE + 20, dirX = 0, dirZ = -1, speed = 10 }
-	local approach = RedLightRule.findApproach(car) :: RedLightRule.Approach
+	local approach = RedLightRule.findApproach(car) :: RedLightRule.LightApproach
 	expectEqual(approach.alongX, false)
 	expectEqual(approach.direction, -1)
 end)
@@ -92,13 +93,14 @@ test("stopping at red and waiting for green earns exactly one star", function()
 	expectEqual(result, "star")
 end)
 
-test("the star names the crossing", function()
+test("the star is for that light, with praise", function()
 	local state = experienced()
 	RedLightRule.update(state, eastbound(STOP_LINE - 4, 0), RED)
 	local events = RedLightRule.update(state, eastbound(STOP_LINE - 4, 0), CYCLE + GREEN)
 	local event = events[1] :: any
 	expectEqual(event.kind, "star")
-	expectEqual(event.crossing, 1)
+	expectEqual(event.key, "light1")
+	expectEqual(event.praise, "stoppedAtRed")
 end)
 
 test("driving through a red light gives a tip and no star", function()

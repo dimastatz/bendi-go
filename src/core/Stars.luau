@@ -7,6 +7,9 @@ export type Stars = { total: number, lastAward: { [string]: number } }
 
 local Stars = {}
 
+-- The same thing (one light, one street segment, one crosswalk) gives the same player a star at most this often.
+Stars.COOLDOWN = 60
+
 function Stars.new(): Stars
 	return { total = 0, lastAward = {} }
 end

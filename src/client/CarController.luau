@@ -15,6 +15,7 @@ local TownLayout = require(Core:WaitForChild("TownLayout"))
 
 local ChaseCamera = require(script.Parent.ChaseCamera)
 local ResetButton = require(script.Parent.ResetButton)
+local Speedometer = require(script.Parent.Speedometer)
 local TouchControls = require(script.Parent.TouchControls)
 
 local CarController = {}
@@ -73,6 +74,7 @@ local function stopDriving()
 	currentBase = nil
 	ChaseCamera.stop()
 	ResetButton.hide()
+	Speedometer.hide()
 	TouchControls.hide()
 end
 
@@ -123,6 +125,11 @@ local function startDriving(seat: VehicleSeat)
 			TouchControls.getInput(),
 		})
 		local speed, turnRate = CarPhysics.step(currentSpeed, input, dt)
+		-- The server can ask for a gentle slowdown, for example when a pedestrian is right ahead.
+		local cap = car:GetAttribute("SpeedCap")
+		if typeof(cap) == "number" and speed > cap then
+			speed = math.max(cap, currentSpeed - CarPhysics.DEFAULT_TUNING.brakeDeceleration * dt)
+		end
 
 		drive.PlaneVelocity = Vector2.new(forward.X * speed, forward.Z * speed)
 		turn.AngularVelocity = Vector3.new(0, turnRate, 0)
@@ -131,6 +138,7 @@ local function startDriving(seat: VehicleSeat)
 	-- Driving is connected first, so the car still drives if something on screen fails to show.
 	ChaseCamera.start(base)
 	ResetButton.show(resetCar)
+	Speedometer.show(base)
 	TouchControls.show()
 end
 

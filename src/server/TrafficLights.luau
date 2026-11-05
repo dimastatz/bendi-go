@@ -29,7 +29,7 @@ local LAMP_COLORS = {
 	green = { on = Color3.fromRGB(40, 235, 100), off = Color3.fromRGB(15, 60, 30) },
 }
 
-type Lamp = { part: Part, color: string, approach: RedLightRule.Approach, lit: boolean? }
+type Lamp = { part: Part, color: string, approach: RedLightRule.LightApproach, lit: boolean? }
 
 local lamps: { Lamp } = {}
 
@@ -50,27 +50,32 @@ local function makePart(parent: Instance, name: string, size: Vector3, cframe: C
 end
 
 -- A point `along` the approach's street and `right` studs to the right of its center line, for its traffic.
-local function approachPoint(approach: RedLightRule.Approach, along: number, right: number, height: number): Vector3
+local function approachPoint(
+	approach: RedLightRule.LightApproach,
+	along: number,
+	right: number,
+	height: number
+): Vector3
 	if approach.alongX then
 		return Vector3.new(along, height, approach.at + approach.direction * right)
 	end
 	return Vector3.new(approach.at - approach.direction * right, height, along)
 end
 
-local function buildStopLine(parent: Instance, approach: RedLightRule.Approach)
+local function buildStopLine(parent: Instance, approach: RedLightRule.LightApproach)
 	-- Across the approach's half of the road, from the center line to the curb.
 	local size = if approach.alongX
 		then Vector3.new(STOP_LINE_WIDTH, 0.06, HALF_ROAD)
 		else Vector3.new(HALF_ROAD, 0.06, STOP_LINE_WIDTH)
-	local position = approachPoint(approach, approach.stopLine, HALF_ROAD / 2, 0.03)
+	local position = approachPoint(approach, approach.line, HALF_ROAD / 2, 0.03)
 	makePart(parent, "StopLine", size, CFrame.new(position), Color3.fromRGB(245, 245, 245))
 end
 
-local function buildLight(parent: Instance, approach: RedLightRule.Approach)
+local function buildLight(parent: Instance, approach: RedLightRule.LightApproach)
 	local model = Instance.new("Model")
 	model.Name = `TrafficLight{approach.crossing}`
 
-	local foot = approachPoint(approach, approach.stopLine, HALF_ROAD + POLE_OFFSET, SIDEWALK_TOP)
+	local foot = approachPoint(approach, approach.line, HALF_ROAD + POLE_OFFSET, SIDEWALK_TOP)
 	-- The light faces the cars driving toward it.
 	local facing = if approach.alongX
 		then Vector3.new(-approach.direction, 0, 0)
