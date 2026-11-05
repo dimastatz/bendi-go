@@ -1,7 +1,12 @@
 local CollisionGroups = require(script.Parent.CollisionGroups)
 local TownBuilder = require(script.Parent.TownBuilder)
+local TrafficLights = require(script.Parent.TrafficLights)
 local CarSpawner = require(script.Parent.CarSpawner)
+local TrafficRules = require(script.Parent.TrafficRules)
 
 CollisionGroups.setup()
-TownBuilder.build()
+local town = TownBuilder.build()
+TrafficLights.build(town)
+TrafficLights.start()
 CarSpawner.start()
+TrafficRules.start()

@@ -25,7 +25,7 @@ local CELL_SIZE = 56 -- land is split into cells about this big, with one buildi
 local BUILDING_GAP = 5 -- space around each building inside its cell
 local MIN_BUILDING_SIZE = 24 -- a cell too small for a building this wide becomes a garden
 local TREE_SPACING = 28
-local CORNER_CLEARANCE = 16 -- no street trees right at a corner, so drivers can see around it
+local CORNER_CLEARANCE = 30 -- no street trees near a corner, so drivers can see around it and see traffic lights
 local PARKED_CAR_SPACING = 18
 
 -- A number from 0 to 1008 that depends on the position, used to pick variety.
