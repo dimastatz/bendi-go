@@ -16,4 +16,5 @@ trace.json
 # Rojo build output
 *.rbxl
 *.rbxlx
+*.rbxl.lock
 sourcemap.json
