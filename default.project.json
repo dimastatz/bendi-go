@@ -10,6 +10,9 @@
         "$className": "Folder",
         "BendiTip": {
           "$className": "RemoteEvent"
+        },
+        "BendiLesson": {
+          "$className": "RemoteEvent"
         }
       }
     },

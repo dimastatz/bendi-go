@@ -1,6 +1,7 @@
 -- The star counter (PRD-002, requirement 6). It's always on screen. When a star is earned, a big star flies into
 -- the counter, the counter pops, and a chime plays.
--- The server keeps the count in the player's "Stars" attribute.
+-- The server keeps the count in the player's "Stars" attribute. It's set once the player's saved stars are loaded,
+-- and that first count is shown without a celebration.
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -46,8 +47,8 @@ function StarCounter.start()
 
 	screen.Parent = player:WaitForChild("PlayerGui")
 
-	local shown = player:GetAttribute("Stars") or 0
-	counter.Text = formatCount(shown)
+	local shown: number? = player:GetAttribute("Stars")
+	counter.Text = formatCount(shown or 0)
 
 	local function celebrate()
 		local flyer = Instance.new("TextLabel")
@@ -65,7 +66,7 @@ function StarCounter.start()
 		})
 		flight.Completed:Connect(function()
 			flyer:Destroy()
-			counter.Text = formatCount(shown)
+			counter.Text = formatCount(shown or 0)
 			scale.Scale = 1.5
 			TweenService:Create(scale, TweenInfo.new(0.4, Enum.EasingStyle.Back), { Scale = 1 }):Play()
 			chime:Play()
@@ -75,7 +76,7 @@ function StarCounter.start()
 
 	player:GetAttributeChangedSignal("Stars"):Connect(function()
 		local count = player:GetAttribute("Stars") or 0
-		local earned = count > shown
+		local earned = shown ~= nil and count > shown
 		shown = count
 		if earned then
 			celebrate()

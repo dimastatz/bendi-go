@@ -2,6 +2,10 @@
 
 Each version of Bendi Go finishes one or more milestones from [specs/](specs/README.md).
 
+## Unreleased
+
+- **Driving lessons and license (PRD-006):** Five guided lessons, one for each rule, with arrows on the road and a mini-map. Earning 3 stars passes a lesson and opens the next one, and a new player starts lesson 1 right away. After all five, the driving test opens; following every rule on it earns a Bendi Go driving license card with the player's name, avatar, and date, plus a "Licensed driver" badge on their car. Stars, lessons, and the license are saved between visits.
+
 ## 0.2.0
 
 The town now has real traffic rules to learn. Players earn stars for following them, and Bendi gives a friendly tip when they make a mistake.

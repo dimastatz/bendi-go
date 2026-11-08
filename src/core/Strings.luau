@@ -113,6 +113,80 @@ Strings.TEXT = {
 	},
 	stopPraise = { en = "Great full stop!", he = "עצירה מלאה, מצוין!" },
 	stopWord = { en = "STOP", he = "עצור" },
+
+	-- Driving lessons and the license (PRD-006). Text in {braces} is filled in by the game.
+	lessons = { en = "Lessons", he = "שיעורים" },
+	lessonNumber = { en = "Lesson {number}", he = "שיעור {number}" },
+	lessonBasics = { en = "Driving basics", he = "יסודות הנהיגה" },
+	lessonLights = { en = "Traffic lights", he = "רמזורים" },
+	lessonSpeed = { en = "Speed limits", he = "מהירות מותרת" },
+	lessonCrosswalks = { en = "Crosswalks", he = "מעברי חציה" },
+	lessonJunctions = { en = "Roundabouts and signs", he = "כיכרות ותמרורים" },
+	drivingTest = { en = "Driving test", he = "מבחן נהיגה" },
+	start = { en = "Start", he = "התחלה" },
+	locked = { en = "Locked", he = "נעול" },
+	notTried = { en = "Not passed yet", he = "עוד לא עברת" },
+	passedBest = { en = "Passed! Best: {stars} ⭐", he = "עברת! שיא: {stars} ⭐" },
+	bestSoFar = { en = "Best so far: {stars} ⭐", he = "שיא עד עכשיו: {stars} ⭐" },
+	freeDriving = { en = "Free driving", he = "נהיגה חופשית" },
+	tryAgain = { en = "Try again", he = "לנסות שוב" },
+	nextLesson = { en = "Next lesson", he = "לשיעור הבא" },
+	close = { en = "Close", he = "סגירה" },
+	introBasics = {
+		en = "Let's learn to drive! Follow the arrows on the road and keep to the right side of the street.",
+		he = "בואו נלמד לנהוג! נוסעים לפי החצים על הכביש ושומרים על הצד הימני של הרחוב.",
+	},
+	introLights = {
+		en = "This lesson goes through traffic lights. Stop at red, and go when it turns green!",
+		he = "השיעור הזה עובר דרך רמזורים. עוצרים באדום, ונוסעים כשמתחלף לירוק!",
+	},
+	introSpeed = {
+		en = "Watch the speed signs! Most streets are 50, and streets near homes and schools are 30.",
+		he = "שימו לב לתמרורי המהירות! ברוב הרחובות מותר 50, וליד בתים ובתי ספר מותר 30.",
+	},
+	introCrosswalks = {
+		en = "Look out for people at the zebra crossings. If someone wants to cross, stop and let them go first.",
+		he = "שימו לב לאנשים ליד מעברי החציה. אם מישהו רוצה לחצות, עוצרים ונותנים לו לעבור קודם.",
+	},
+	introJunctions = {
+		en = "Roundabouts and signs! Give way to cars in the roundabout, and stop completely at the stop sign.",
+		he = "כיכרות ותמרורים! נותנים זכות קדימה למכוניות בכיכר, ועוצרים לגמרי בתמרור עצור.",
+	},
+	introTest = {
+		en = "This is your driving test! Follow every rule all the way to the end to get your license.",
+		he = "זה מבחן הנהיגה שלך! שומרים על כל החוקים עד הסוף כדי לקבל רישיון.",
+	},
+	lessonStars = { en = "{stars} of {need} ⭐", he = "{stars} מתוך {need} ⭐" },
+	lessonPassed = {
+		en = "You passed the lesson with {stars} stars!",
+		he = "עברת את השיעור עם {stars} כוכבים!",
+	},
+	lessonTryAgain = {
+		en = "You got {stars} stars, and you need {need} to pass. Let's try again!",
+		he = "קיבלת {stars} כוכבים, וצריך {need} כדי לעבור. בואו ננסה שוב!",
+	},
+	lessonUnlocked = {
+		en = "A new lesson is open! Find it in the Lessons menu.",
+		he = "נפתח שיעור חדש! אפשר למצוא אותו בתפריט השיעורים.",
+	},
+	testUnlocked = {
+		en = "You passed every lesson! The driving test is open.",
+		he = "עברת את כל השיעורים! מבחן הנהיגה פתוח.",
+	},
+	testPassed = {
+		en = "You passed the driving test! Here is your license!",
+		he = "עברת את מבחן הנהיגה! הנה הרישיון שלך!",
+	},
+	testFailed = {
+		en = "Almost! A few rules were missed. Remember Bendi's tips and try again.",
+		he = "כמעט! כמה חוקים לא נשמרו. זוכרים את הטיפים של בנדי ומנסים שוב.",
+	},
+	licenseTitle = { en = "Driving License", he = "רישיון נהיגה" },
+	licenseName = { en = "Name", he = "שם" },
+	licenseDate = { en = "Date", he = "תאריך" },
+	licenseClass = { en = "Class", he = "דרגה" },
+	myLicense = { en = "My license", he = "הרישיון שלי" },
+	licensedDriver = { en = "Licensed driver", he = "יש לי רישיון!" },
 } :: { [string]: { [string]: string } }
 
 -- Returns the language to show for the given locale ids (like "he-il" or "en-us"). The first one that is a
@@ -139,6 +213,17 @@ function Strings.get(key: string, language: string): string
 		return key
 	end
 	return entry[language] or entry[Strings.DEFAULT_LANGUAGE]
+end
+
+-- Like `get`, and fills in each {name} in the text with values[name]. A name with no value is left as it is.
+function Strings.format(key: string, language: string, values: { [string]: any }): string
+	local text = Strings.get(key, language)
+	return (
+		string.gsub(text, "{(%w+)}", function(name: string): string
+			local value = values[name]
+			return if value ~= nil then tostring(value) else `\{{name}\}`
+		end)
+	)
 end
 
 -- True if `language` is written right to left, like Hebrew.

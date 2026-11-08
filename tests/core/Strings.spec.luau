@@ -45,6 +45,12 @@ test("a Hebrew device wins over an English Roblox setting", function()
 	expectEqual(Strings.languageFor("en-us", "ru-ru"), "en")
 end)
 
+test("format fills in values by name", function()
+	expectEqual(Strings.format("lessonStars", "en", { stars = 2, need = 3 }), "2 of 3 ⭐")
+	expectEqual(Strings.format("lessonNumber", "he", { number = 4 }), "שיעור 4")
+	expectEqual(Strings.format("lessonNumber", "en", {}), "Lesson {number}")
+end)
+
 test("Hebrew is right to left and English is not", function()
 	expectEqual(Strings.isRightToLeft("he"), true)
 	expectEqual(Strings.isRightToLeft("en"), false)
