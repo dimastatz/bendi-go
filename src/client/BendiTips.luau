@@ -1,5 +1,5 @@
 -- Bendi's speech bubble (PRD-002, requirement 7). The server sends a tip's key through the BendiTip remote event,
--- and Bendi says it for about 4 seconds. Tips that arrive while Bendi is talking wait their turn.
+-- with values to fill into the text if it has any, and Bendi says it for about 4 seconds. Tips that arrive while Bendi is talking wait their turn.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -143,9 +143,10 @@ local function showNext()
 	end)
 end
 
--- Has Bendi say the tip with this key from the Strings table. A tip that is already showing or waiting is skipped.
-function BendiTips.show(key: string)
-	local text = Text.get(key)
+-- Has Bendi say the tip with this key from the Strings table, filled in with `values`. A tip that is already showing
+-- or waiting is skipped.
+function BendiTips.show(key: string, values: { [string]: any }?)
+	local text = if values then Text.format(key, values) else Text.get(key)
 	if text == current or table.find(queue, text) then
 		return
 	end

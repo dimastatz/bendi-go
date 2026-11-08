@@ -8,6 +8,8 @@ local JunctionBuilder = require(script.Parent.JunctionBuilder)
 local Pedestrians = require(script.Parent.Pedestrians)
 local NpcCars = require(script.Parent.NpcCars)
 local CarSpawner = require(script.Parent.CarSpawner)
+local LessonRunner = require(script.Parent.LessonRunner)
+local PlayerProgress = require(script.Parent.PlayerProgress)
 local Rules = require(script.Parent.Rules)
 
 CollisionGroups.setup()
@@ -23,6 +25,13 @@ NpcCars.build(town)
 Pedestrians.start(NpcCars.cars)
 NpcCars.start(Pedestrians.status)
 CarSpawner.start()
+LessonRunner.start()
+PlayerProgress.start()
 Rules.start(function()
 	return { crosswalks = Pedestrians.status(), npcs = NpcCars.cars() }
+end, function(player, event)
+	if event.kind == "star" then
+		PlayerProgress.addStar(player)
+	end
+	LessonRunner.onEvent(player, event)
 end)

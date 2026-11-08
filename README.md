@@ -1,7 +1,7 @@
 <div align="center">
 <h1 align="center"> Bendi Go </h1>
 <h3>Learn Israeli Traffic Rules by Driving in Roblox</br></h3>
-<img src="https://img.shields.io/badge/Progress-80%25-yellow"> <img src="https://img.shields.io/badge/Feedback-Welcome-green">
+<img src="https://img.shields.io/badge/Progress-95%25-yellow"> <img src="https://img.shields.io/badge/Feedback-Welcome-green">
 </br>
 </br>
 <kbd>
@@ -70,6 +70,10 @@ Town streets are 50 km/h, and a residential street and the school street are 30 
 People walk around town and cross at four zebra crosswalks. Stop before the stripes and let them cross to earn a star. Pedestrians can never be hit: they step back to the curb, and your car is gently slowed.
 
 Other cars drive around town and follow the same rules. At the roundabout, give way to cars already going around; at the stop signs, stop completely before the line; at the give-way sign, let cars on the main road go first. Each earns a star.
+
+The **Lessons** button opens five short lessons, one for each rule: driving basics, traffic lights, speed limits, crosswalks, and roundabouts and signs. Follow the arrows on the road and the mini-map, and earn at least 3 stars to pass and open the next lesson. A new player starts lesson 1 right away, and **Free driving** is always one tap away. After all five lessons, the driving test opens: follow every rule on a longer route to earn your own Bendi Go driving license, and a "Licensed driver" badge on your car that everyone can see.
+
+Stars, lessons, and the license are saved with Roblox DataStores. In Studio, saving only works once the place is published and **Game Settings → Security → Enable Studio Access to API Services** is on; without it, the game still works and just doesn't save.
 
 One stud is 0.28 m, so the car's top speed of 70 km/h is about 69 studs per second. All speeds go through `src/core/Units.luau`.
 

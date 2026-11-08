@@ -1,5 +1,6 @@
 -- Gives every player their own Bendi car and keeps them in the driver's seat.
 -- Each player's car is rebuilt when their character respawns and removed when they leave.
+-- A car's "Licensed" attribute follows its player's, so every client can show the licensed driver badge (PRD-006).
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -62,6 +63,7 @@ local function onCharacterAdded(player: Player, character: Model)
 	local humanoid = character:WaitForChild("Humanoid") :: Humanoid
 	local car = CarBuilder.build(slotOrigin(takeSlot(player)))
 	car.Name = `BendiCar_{player.Name}`
+	car:SetAttribute("Licensed", player:GetAttribute("Licensed") == true)
 	CollisionGroups.addPlayerParts(car)
 	car.Parent = workspace
 	cars[player] = car
@@ -79,6 +81,12 @@ local function onCharacterAdded(player: Player, character: Model)
 end
 
 local function onPlayerAdded(player: Player)
+	player:GetAttributeChangedSignal("Licensed"):Connect(function()
+		local car = cars[player]
+		if car then
+			car:SetAttribute("Licensed", player:GetAttribute("Licensed") == true)
+		end
+	end)
 	player.CharacterAdded:Connect(function(character)
 		onCharacterAdded(player, character)
 	end)

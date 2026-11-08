@@ -34,6 +34,17 @@ function Text.get(key: string): string
 	return Strings.get(key, language)
 end
 
+-- Like `get`, and fills in each {name} in the text with values[name].
+function Text.format(key: string, values: { [string]: any }): string
+	if hasTranslator then
+		local found, text = pcall(translator.FormatByKey, translator, key, values)
+		if found then
+			return text
+		end
+	end
+	return Strings.format(key, language, values)
+end
+
 -- True if the player's language is written right to left, like Hebrew.
 function Text.isRightToLeft(): boolean
 	return Strings.isRightToLeft(language)
