@@ -49,3 +49,20 @@ CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)) runs the format check,
 ## Specs
 
 `specs/` holds one PRD per milestone (`prd-001-*.md` to `prd-006-*.md`), built in order. [specs/README.md](specs/README.md) lists the milestones and the rules that apply to all of them (Israeli rules done correctly, no star penalties, English and Hebrew text, kid safety, "done means published"). Read the relevant PRD before starting work on a feature.
+
+## Architecture Principals: functional core, imperative shell
+- **Game/meta state** (player data, inventory, economy, round/match state, UI state)
+  lives in one store per VM: one authoritative server store, one client store
+  per player. Updates go through pure reducers. State is immutable.
+- **Game rules are pure functions:** damage, rewards, validation, state transitions.
+  They take data in and return data out, with no Instance access.
+- **The engine layer is imperative on purpose:** Instances, physics, tweens,
+  animations and per-frame loops change state in place and stay thin. They read
+  from the store or dispatch actions. They never contain game rules.
+- **Hot paths are exempt from immutability.** In code that runs every frame or
+  for many entities, don't clone or freeze tables per tick. Prefer in-place
+  updates or an ECS.
+- **Keep functions small and focused** everywhere, including the imperative layer.
+
+
+
