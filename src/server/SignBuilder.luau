@@ -38,6 +38,7 @@ function SignBuilder.pole(parent: Instance, foot: Vector3, height: number)
 		POLE_COLOR
 	)
 	pole.Shape = Enum.PartType.Cylinder
+	pole.Material = Enum.Material.Metal
 end
 
 -- Draws `text` on a see-through panel just in front of the sign face at `face`, `width` by `height` studs.

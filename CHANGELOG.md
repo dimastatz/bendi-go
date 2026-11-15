@@ -5,6 +5,7 @@ Each version of Bendi Go finishes one or more milestones from [specs/](specs/REA
 ## Unreleased
 
 - **Driving lessons and license (PRD-006):** Five guided lessons, one for each rule, with arrows on the road and a mini-map. Earning 3 stars passes a lesson and opens the next one, and a new player starts lesson 1 right away. After all five, the driving test opens; following every rule on it earns a Bendi Go driving license card with the player's name, avatar, and date, plus a "Licensed driver" badge on their car. Stars, lessons, and the license are saved between visits.
+- **Realistic graphics (PRD-007):** The town now has realistic light, shadows, and distant fog, and the day slowly turns into evening and night and back again. At night, street lamps, headlights, and the windows of buildings light up. Curbs are painted the Israeli way: red and white where stopping isn't allowed, blue and white for paid parking. Buildings have windows with shutters, balconies, and roof walls, trees are fuller, gardens have hedges, and every car has tinted windows, wheels with rims, lights, and an Israeli license plate. The Bendi car keeps its big eyes and "BENDI GO" plate.
 
 ## 0.2.0
 

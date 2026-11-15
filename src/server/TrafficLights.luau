@@ -91,6 +91,7 @@ local function buildLight(parent: Instance, approach: RedLightRule.LightApproach
 		Color3.fromRGB(120, 124, 128)
 	)
 	pole.Shape = Enum.PartType.Cylinder
+	pole.Material = Enum.Material.Metal
 
 	local head = base * CFrame.new(0, POLE_HEIGHT + HEAD_SIZE.Y / 2, 0)
 	makePart(model, "Housing", HEAD_SIZE, head, HOUSING)

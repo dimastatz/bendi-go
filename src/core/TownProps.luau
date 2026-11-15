@@ -10,6 +10,8 @@ type Rect = Rect.Rect
 export type Building = { rect: Rect, floors: number, style: number }
 export type Tree = { x: number, z: number, kind: "palm" | "round" }
 export type ParkedCar = { pose: TownLayout.Pose, style: number }
+-- A street lamp standing on the sidewalk. (dirX, dirZ) points across the road, the way its arm reaches.
+export type Lamp = { x: number, z: number, dirX: number, dirZ: number }
 
 local TownProps = {}
 
@@ -27,6 +29,9 @@ local MIN_BUILDING_SIZE = 24 -- a cell too small for a building this wide become
 local TREE_SPACING = 28
 local CORNER_CLEARANCE = 30 -- no street trees near a corner, so drivers can see around it and see traffic lights
 local PARKED_CAR_SPACING = 18
+local LAMP_SIGN_CLEARANCE = 12 -- how far lamps keep from the roundabout and crosswalks, where signs stand
+
+TownProps.LAMP_CURB_OFFSET = 1.5 -- how far from the curb a street lamp stands
 
 -- A number from 0 to 1008 that depends on the position, used to pick variety.
 function TownProps.hash(x: number, z: number): number
@@ -52,27 +57,34 @@ local function treeKind(x: number, z: number): "palm" | "round"
 	return if TownProps.hash(x, z) % 2 == 0 then "palm" else "round"
 end
 
--- Trees every TREE_SPACING studs along the edges of `line`, skipping corners and anything inside `keepClear`.
-local function streetTrees(line: Rect, keepClear: Rect?, trees: { Tree })
+-- Calls `visit(x, z, normalX, normalZ, slot, count)` for each tree slot along each edge of `line`: count + 1 slots,
+-- TREE_SPACING apart, centered on the edge and away from its corners. The normal points out of `line`.
+local function edgeSlots(line: Rect, visit: (number, number, number, number, number, number) -> ())
 	local edges = {
-		{ line.minX, line.minZ, line.maxX, line.minZ },
-		{ line.minX, line.maxZ, line.maxX, line.maxZ },
-		{ line.minX, line.minZ, line.minX, line.maxZ },
-		{ line.maxX, line.minZ, line.maxX, line.maxZ },
+		{ line.minX, line.minZ, line.maxX, line.minZ, 0, -1 },
+		{ line.minX, line.maxZ, line.maxX, line.maxZ, 0, 1 },
+		{ line.minX, line.minZ, line.minX, line.maxZ, -1, 0 },
+		{ line.maxX, line.minZ, line.maxX, line.maxZ, 1, 0 },
 	}
 	for _, edge in edges do
 		local x1, z1, x2, z2 = edge[1], edge[2], edge[3], edge[4]
 		local length = math.max(x2 - x1, z2 - z1)
 		local count = math.floor((length - 2 * CORNER_CLEARANCE) / TREE_SPACING)
 		local start = (length - count * TREE_SPACING) / 2
-		for i = 0, count do
-			local t = (start + i * TREE_SPACING) / length
-			local x, z = x1 + (x2 - x1) * t, z1 + (z2 - z1) * t
-			if not (keepClear and Rect.contains(keepClear, x, z)) then
-				table.insert(trees, { x = x, z = z, kind = treeKind(x, z) })
-			end
+		for slot = 0, count, 0.5 do
+			local t = (start + slot * TREE_SPACING) / length
+			visit(x1 + (x2 - x1) * t, z1 + (z2 - z1) * t, edge[5], edge[6], slot, count)
 		end
 	end
+end
+
+-- Trees every TREE_SPACING studs along the edges of `line`, skipping corners and anything inside `keepClear`.
+local function streetTrees(line: Rect, keepClear: Rect?, trees: { Tree })
+	edgeSlots(line, function(x, z, _, _, slot)
+		if slot % 1 == 0 and not (keepClear and Rect.contains(keepClear, x, z)) then
+			table.insert(trees, { x = x, z = z, kind = treeKind(x, z) })
+		end
+	end)
 end
 
 -- The buildings and trees on one lot from TownLayout.lots().
@@ -101,6 +113,43 @@ function TownProps.forLot(lot: TownLayout.Lot): ({ Building }, { Tree })
 	end
 	streetTrees(lot.treeLine, lot.keepClear, trees)
 	return buildings, trees
+end
+
+-- Street lamps (PRD-007) along the curbs of one lot from TownLayout.lots(). They stand in every other gap between
+-- street trees, always including the middle gap, so tree crowns never hide them. They keep away from the corners,
+-- the roundabout, and crosswalks, where the signs stand.
+function TownProps.lampsForLot(lot: TownLayout.Lot): { Lamp }
+	local lamps = {}
+	local keepClear = lot.keepClear and Rect.inset(lot.keepClear, -LAMP_SIGN_CLEARANCE)
+	local shift = TownLayout.SIDEWALK_WIDTH / 2 - TownProps.LAMP_CURB_OFFSET
+	edgeSlots(lot.treeLine, function(x, z, normalX, normalZ, slot, count)
+		local middle = math.floor((count - 1) / 2)
+		if slot % 1 ~= 0.5 or (slot - 0.5 - middle) % 2 ~= 0 then
+			return
+		end
+		-- The road is outside a block's tree line, but inside the border land's.
+		if
+			not TownLayout.isOnRoad(x + normalX * TownLayout.SIDEWALK_WIDTH, z + normalZ * TownLayout.SIDEWALK_WIDTH)
+		then
+			normalX, normalZ = -normalX, -normalZ
+		end
+		local lampX, lampZ = x + normalX * shift, z + normalZ * shift
+		if keepClear and Rect.contains(keepClear, lampX, lampZ) then
+			return
+		end
+		for _, crosswalk in TownLayout.CROSSWALKS do
+			local crosswalkX, crosswalkZ = crosswalk.at, crosswalk.along
+			if crosswalk.alongX then
+				crosswalkX, crosswalkZ = crosswalk.along, crosswalk.at
+			end
+			local distance = math.sqrt((lampX - crosswalkX) ^ 2 + (lampZ - crosswalkZ) ^ 2)
+			if distance < TownLayout.ROAD_WIDTH / 2 + LAMP_SIGN_CLEARANCE then
+				return
+			end
+		end
+		table.insert(lamps, { x = lampX, z = lampZ, dirX = normalX, dirZ = normalZ })
+	end)
+	return lamps
 end
 
 -- True if a car parked at `along` on `segment` would hide a crosswalk. Like near crossings, Israeli law says no

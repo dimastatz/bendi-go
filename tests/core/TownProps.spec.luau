@@ -99,6 +99,66 @@ test("lots next to the roundabout space keep their trees out of it", function()
 	expectNear(TownLayout.ROUNDABOUT.halfSize, Rect.width(TownLayout.ROUNDABOUT_SPACE) / 2)
 end)
 
+-- Every street lamp in town, with the trees of its lot.
+local function allLamps(): { { lamp: TownProps.Lamp, trees: { TownProps.Tree } } }
+	local result = {}
+	for _, lot in TownLayout.lots() do
+		local _, trees = TownProps.forLot(lot)
+		for _, lamp in TownProps.lampsForLot(lot) do
+			table.insert(result, { lamp = lamp, trees = trees })
+		end
+	end
+	return result
+end
+
+test("street lamps stand on the sidewalk next to the curb, reaching over the road", function()
+	local lamps = allLamps()
+	expectEqual(#lamps >= 60, true)
+	for _, entry in lamps do
+		local lamp = entry.lamp
+		expectEqual(math.abs(lamp.dirX) + math.abs(lamp.dirZ), 1)
+		expectEqual(TownLayout.isOnRoad(lamp.x, lamp.z), false)
+		-- Just past the curb is the road, and just behind the lamp is still sidewalk.
+		local reach = TownProps.LAMP_CURB_OFFSET + 0.5
+		expectEqual(TownLayout.isOnRoad(lamp.x + lamp.dirX * reach, lamp.z + lamp.dirZ * reach), true)
+		expectEqual(TownLayout.isOnRoad(lamp.x - lamp.dirX, lamp.z - lamp.dirZ), false)
+	end
+end)
+
+test("street lamps stay clear of trees, crosswalks, and the roundabout", function()
+	for _, entry in allLamps() do
+		local lamp = entry.lamp
+		for _, tree in entry.trees do
+			local distance = math.sqrt((lamp.x - tree.x) ^ 2 + (lamp.z - tree.z) ^ 2)
+			expectEqual(distance >= 10, true)
+		end
+		for _, crosswalk in TownLayout.CROSSWALKS do
+			local x, z = crosswalk.at, crosswalk.along
+			if crosswalk.alongX then
+				x, z = crosswalk.along, crosswalk.at
+			end
+			expectEqual(math.sqrt((lamp.x - x) ^ 2 + (lamp.z - z) ^ 2) >= TownLayout.ROAD_WIDTH / 2, true)
+		end
+		expectEqual(Rect.contains(Rect.inset(TownLayout.ROUNDABOUT_SPACE, -10), lamp.x, lamp.z), false)
+	end
+end)
+
+test("both sides of a street get lamps, including the ring road", function()
+	local sides = { minus = 0, plus = 0, ring = 0 }
+	for _, entry in allLamps() do
+		local lamp = entry.lamp
+		if lamp.dirX < 0 or lamp.dirZ < 0 then
+			sides.minus += 1
+		else
+			sides.plus += 1
+		end
+		if lamp.x < TownLayout.STREETS_X[1] or lamp.x > TownLayout.STREETS_X[#TownLayout.STREETS_X] then
+			sides.ring += 1
+		end
+	end
+	expectEqual(sides.minus > 10 and sides.plus > 10 and sides.ring > 2, true)
+end)
+
 test("the school block is left for the school", function()
 	for _, lot in TownLayout.lots() do
 		local buildings = TownProps.forLot(lot)
