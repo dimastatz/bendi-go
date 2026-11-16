@@ -2,7 +2,7 @@
 
 ## Goal
 
-Make Bendi Go look like a real town: realistic light and shadows, a sky that changes from day to night, street lamps and headlights that light up the road in the dark, and streets, buildings, trees, and cars with more detail.
+Make Bendi Go look like a real town: realistic light and shadows, a sky that changes from day to night, street lamps and headlights that light up the road in the dark, and streets, buildings, trees, and cars with more detail. Players can also drive from inside the car, with a real dashboard and the driving instructor sitting next to them.
 
 ## Player value
 
@@ -14,6 +14,7 @@ The town feels like a real place to drive in, so the rules feel real too. Drivin
 - As a player, I see the day turn into evening and night, and the street lamps, headlights, and windows light up.
 - As a player, I can still see the road clearly at night.
 - As a player, I can tell from the curb color where cars may park.
+- As a player, I can drive from inside the car, see the dashboard and steering wheel, and look over at my driving instructor.
 
 ## Requirements
 
@@ -49,9 +50,21 @@ The town feels like a real place to drive in, so the rules feel real too. Drivin
 13. The Bendi car still looks like the mascot from PRD-001: blue, big eyes, and a yellow "BENDI GO" license plate.
 14. How cars drive and bump into things doesn't change. Each car keeps its invisible collision box, and the new parts are only for looks.
 
+### Inside view
+
+15. While driving, the player can switch between the outside view (behind the car, like before) and the inside view from the driver's seat. A button under "Reset car", the V key, or clicking the gamepad's right stick switches views. The game remembers the choice until the player leaves.
+16. Like in every Israeli car, the driver sits on the left. The inside view shows a realistic dashboard:
+    - A speedometer with a needle, the speed in km/h, and the current speed limit sign, which glow so they're easy to read at night.
+    - A screen with the clock, which shows the game's time of day.
+    - Air vents, a gear lever, and a rear-view mirror.
+    - A steering wheel that turns with the player's steering, with the player's hands on it at 10 and 2.
+17. The driving instructor sits in the passenger seat on the right, like in a real Israeli driving lesson. The player can look around to see the instructor and check the sides: hold the right mouse button and move the mouse, hold Q or E, push the gamepad's right stick, or drag on a touch screen. When the player lets go, the view turns back to the road.
+18. Other players see the instructor and the dashboard through the car's windows.
+19. The player's own character is hidden in the inside view, so it never blocks the road, and the windows are clearer from the inside.
+
 ### Performance
 
-15. The game still runs smoothly on a phone or tablet. Lights don't cast shadows, and Roblox's own graphics quality setting lowers the detail on slower devices.
+20. The game still runs smoothly on a phone or tablet. Lights don't cast shadows, and Roblox's own graphics quality setting lowers the detail on slower devices.
 
 ## Acceptance criteria
 
@@ -61,6 +74,11 @@ The town feels like a real place to drive in, so the rules feel real too. Drivin
 - [ ] The road is easy to see and drive on at night.
 - [ ] Curbs are red and white near crossings and crosswalks, blue and white on the middle streets, and parked cars only stand next to blue-white or gray curbs.
 - [ ] The Bendi car still has its blue body, big eyes, and "BENDI GO" plate, and drives exactly like before.
+- [ ] The view button, V, and the gamepad's right stick switch between the outside and inside views, and the choice stays after a reset or respawn.
+- [ ] In the inside view, the speedometer needle and number match the speed, the limit sign matches the street, and the clock matches the sky.
+- [ ] The steering wheel and the player's hands turn left and right with the steering.
+- [ ] The player can look over at the instructor with the mouse, Q and E, the right stick, or a finger, and the view turns back to the road on letting go.
+- [ ] Other players can see the instructor sitting next to the driver.
 - [ ] The game runs smoothly on a phone.
 
 ## Out of scope
