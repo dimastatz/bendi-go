@@ -1,8 +1,10 @@
 -- Builds a Bendi car: the mascot from PRD-001 (blue, big eyes, yellow "BENDI GO" plate), drawn by CarModel.
 -- The car is driven arcade-style: the invisible Base slides on the ground with no friction, and the
 -- driver's client moves it through the Drive (LinearVelocity) and Turn (AngularVelocity) constraints.
--- An invisible Hitbox bumps into curbs and parked cars. Everything else is only for looks.
+-- An invisible Hitbox bumps into curbs and parked cars. Everything else is only for looks. Inside, the driver sits
+-- on the left, with a dashboard, a steering wheel, and the driving instructor next to them (CarInterior).
 
+local CarInterior = require(script.Parent.CarInterior)
 local CarModel = require(script.Parent.CarModel)
 
 local CarBuilder = {}
@@ -49,11 +51,13 @@ function CarBuilder.build(origin: CFrame): Model
 		mascot = true,
 		headlights = true,
 	})
+	CarInterior.build(car, origin, base)
 
 	local seat = Instance.new("VehicleSeat")
 	seat.Name = "DriverSeat"
 	seat.Size = Vector3.new(2, 1, 2)
-	seat.CFrame = base.CFrame * CFrame.new(0, 3.5, 1.5)
+	-- The seat is 1 stud tall, so its top is at SEAT_TOP.
+	seat.CFrame = origin * CFrame.new(CarInterior.DRIVER_X, CarInterior.SEAT_TOP - 0.5, CarInterior.SEAT_Z)
 	seat.Color = Color3.fromRGB(40, 40, 45)
 	-- The seat only reads the driver's input. CarController does the driving.
 	seat.MaxSpeed = 0

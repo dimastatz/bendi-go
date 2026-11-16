@@ -62,6 +62,8 @@ Open `bendi-go.rbxl` in Roblox Studio, click **Connect** in the Rojo plugin, the
 | Steer | A / D or Left / Right arrows | Left stick | ◀ ▶ buttons |
 | Brake | Space | A or B | |
 | Reset car | R or the Reset car button | Y | Reset car button |
+| Switch inside / outside view | V or the view button | Click the right stick | View button |
+| Look around (inside view) | Hold the right mouse button and move, or hold Q / E | Right stick | Drag on the screen |
 
 Four crossings have Israeli traffic lights (red and yellow, green, flashing green, yellow, red). Stop before the white line at a red light and wait for green to earn a star. Light timing is set in `src/core/TrafficLightConfig.luau`.
 
