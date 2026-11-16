@@ -14,6 +14,10 @@ Strings.TEXT = {
 	gas = { en = "Gas", he = "גז" },
 	brake = { en = "Brake", he = "בלם" },
 
+	-- The camera view button (PRD-007). It names the view it switches to.
+	insideView = { en = "Inside view", he = "מבט מבפנים" },
+	outsideView = { en = "Outside view", he = "מבט מבחוץ" },
+
 	-- Bendi's traffic light tips (PRD-002)
 	ranRed = {
 		en = "Red light means stop! Wait behind the white line until it turns green.",

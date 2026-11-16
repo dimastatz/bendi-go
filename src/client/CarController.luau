@@ -1,7 +1,8 @@
 -- Drives the local player's Bendi car while they sit in its driver seat.
 -- The driver's client owns the car's physics, so it reads input every frame, runs CarPhysics, and sets
 -- the Drive and Turn constraints directly. Space brakes instead of jumping out of the car.
--- While driving, the chase camera, the Reset car button, and (on touch screens) the pedals are shown.
+-- While driving, the camera (outside or inside view), the dashboard, the Reset car button, and (on touch screens)
+-- the pedals are shown.
 
 local ContextActionService = game:GetService("ContextActionService")
 local Players = game:GetService("Players")
@@ -13,7 +14,8 @@ local CarPhysics = require(Core:WaitForChild("CarPhysics"))
 local DriverInput = require(Core:WaitForChild("DriverInput"))
 local TownLayout = require(Core:WaitForChild("TownLayout"))
 
-local ChaseCamera = require(script.Parent.ChaseCamera)
+local CarCamera = require(script.Parent.CarCamera)
+local Dashboard = require(script.Parent.Dashboard)
 local ResetButton = require(script.Parent.ResetButton)
 local Speedometer = require(script.Parent.Speedometer)
 local TouchControls = require(script.Parent.TouchControls)
@@ -72,7 +74,8 @@ local function stopDriving()
 	ContextActionService:UnbindAction(RESET_ACTION)
 	braking = false
 	currentBase = nil
-	ChaseCamera.stop()
+	CarCamera.stop()
+	Dashboard.hide()
 	ResetButton.hide()
 	Speedometer.hide()
 	TouchControls.hide()
@@ -133,10 +136,12 @@ local function startDriving(seat: VehicleSeat)
 
 		drive.PlaneVelocity = Vector2.new(forward.X * speed, forward.Z * speed)
 		turn.AngularVelocity = Vector3.new(0, turnRate, 0)
+		Dashboard.steer(input.steer, dt)
 	end)
 
 	-- Driving is connected first, so the car still drives if something on screen fails to show.
-	ChaseCamera.start(base)
+	CarCamera.start(car)
+	Dashboard.show(car, base)
 	ResetButton.show(resetCar)
 	Speedometer.show(base)
 	TouchControls.show()
