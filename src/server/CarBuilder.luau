@@ -1,41 +1,19 @@
--- Builds a Bendi car from basic parts.
+-- Builds a Bendi car: the mascot from PRD-001 (blue, big eyes, yellow "BENDI GO" plate), drawn by CarModel.
 -- The car is driven arcade-style: the invisible Base slides on the ground with no friction, and the
 -- driver's client moves it through the Drive (LinearVelocity) and Turn (AngularVelocity) constraints.
--- Wheels are only for looks. A proper mascot model replaces these parts later.
+-- An invisible Hitbox bumps into curbs and parked cars. Everything else is only for looks.
+
+local CarModel = require(script.Parent.CarModel)
 
 local CarBuilder = {}
 
 CarBuilder.TAG = "BendiCar"
 
 local BODY_COLOR = Color3.fromRGB(58, 150, 232)
-local WHEEL_COLOR = Color3.fromRGB(35, 37, 42)
-local PLATE_COLOR = Color3.fromRGB(250, 200, 30)
+local ROOF_HEIGHT = 7.6 -- taller than other cars, so the player fits inside
 
--- Car size in studs: about 4 m long and 2 m wide at 0.28 m per stud.
-local LENGTH = 14
-local WIDTH = 7
-
--- Adds a part positioned relative to the base and welded to it.
-local function addPart(car: Model, base: BasePart, name: string, shape: Enum.PartType, size: Vector3, offset: CFrame)
-	local part = Instance.new("Part")
-	part.Name = name
-	part.Shape = shape
-	part.Size = size
-	part.CFrame = base.CFrame * offset
-	part.Color = BODY_COLOR
-	part.Material = Enum.Material.SmoothPlastic
-	part.TopSurface = Enum.SurfaceType.Smooth
-	part.BottomSurface = Enum.SurfaceType.Smooth
-	part.Massless = true
-
-	local weld = Instance.new("WeldConstraint")
-	weld.Part0 = base
-	weld.Part1 = part
-	weld.Parent = part
-
-	part.Parent = car
-	return part
-end
+local LENGTH = CarModel.LENGTH
+local WIDTH = CarModel.WIDTH
 
 -- Builds a car with its base resting on the ground at `origin`. The car faces origin's LookVector.
 function CarBuilder.build(origin: CFrame): Model
@@ -52,39 +30,25 @@ function CarBuilder.build(origin: CFrame): Model
 	base.Parent = car
 	car.PrimaryPart = base
 
-	-- Offsets are from the base's center. The front of the car is -Z.
-	addPart(car, base, "Body", Enum.PartType.Block, Vector3.new(WIDTH, 2.5, LENGTH), CFrame.new(0, 1.75, 0))
+	local hitbox = Instance.new("Part")
+	hitbox.Name = "Hitbox"
+	hitbox.Size = Vector3.new(WIDTH, 2.5, LENGTH)
+	hitbox.CFrame = base.CFrame * CFrame.new(0, 1.75, 0)
+	hitbox.Transparency = 1
+	hitbox.Massless = true
+	local hitboxWeld = Instance.new("WeldConstraint")
+	hitboxWeld.Part0 = base
+	hitboxWeld.Part1 = hitbox
+	hitboxWeld.Parent = hitbox
+	hitbox.Parent = car
 
-	local cabin = addPart(car, base, "Cabin", Enum.PartType.Block, Vector3.new(WIDTH - 1, 4, 7), CFrame.new(0, 5, 1.5))
-	cabin.Material = Enum.Material.Glass
-	cabin.Transparency = 0.6
-	cabin.CanCollide = false
-
-	local plate = addPart(car, base, "Plate", Enum.PartType.Block, Vector3.new(2.4, 0.8, 0.2), CFrame.new(0, 1.6, -7.1))
-	plate.Color = PLATE_COLOR
-
-	for _, side in { -1, 1 } do
-		local eye = addPart(car, base, "Eye", Enum.PartType.Ball, Vector3.one * 1.8, CFrame.new(side * 1.8, 2.4, -6.6))
-		eye.Color = Color3.new(1, 1, 1)
-
-		local pupil =
-			addPart(car, base, "Pupil", Enum.PartType.Ball, Vector3.one * 0.8, CFrame.new(side * 1.8, 2.4, -7.3))
-		pupil.Color = Color3.fromRGB(20, 20, 20)
-
-		for _, axle in { -1, 1 } do
-			-- Cylinders are round along their X axis, which already points sideways.
-			local wheel = addPart(
-				car,
-				base,
-				"Wheel",
-				Enum.PartType.Cylinder,
-				Vector3.new(1.2, 3, 3),
-				CFrame.new(side * (WIDTH / 2 + 0.1), 1, axle * 4.5)
-			)
-			wheel.Color = WHEEL_COLOR
-			wheel.CanCollide = false
-		end
-	end
+	CarModel.build(car, origin, base, {
+		paint = BODY_COLOR,
+		roof = ROOF_HEIGHT,
+		plate = "BENDI GO",
+		mascot = true,
+		headlights = true,
+	})
 
 	local seat = Instance.new("VehicleSeat")
 	seat.Name = "DriverSeat"

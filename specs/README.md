@@ -10,6 +10,7 @@ Each PRD describes one milestone. Every milestone ends with a version of the gam
 | [PRD-004](prd-004-pedestrian-crossings.md) | Pedestrian Crossings | People crossing the street, and stars for letting them cross |
 | [PRD-005](prd-005-roundabouts-and-yielding.md) | Roundabouts and Yielding | Other cars on the road, roundabouts, stop and give-way signs |
 | [PRD-006](prd-006-driving-lessons-and-license.md) | Driving Lessons and License | Guided lessons, saved progress, and a Bendi Go driving license |
+| [PRD-007](prd-007-realistic-graphics.md) | Realistic Graphics | Realistic light, day and night, street lamps, painted curbs, and more detailed buildings, trees, and cars |
 
 ## Rules for every milestone
 
