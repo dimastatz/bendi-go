@@ -1,0 +1,1291 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bendi Go</title>
+<meta name="description" content="Bendi Go is an open-source Roblox game that teaches kids Israeli traffic rules by driving. Every requirement of the game, milestone by milestone, with an animation for each.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f6f8fb;
+    --surface: #ffffff;
+    --surface-2: #eef3f9;
+    --text: #17202b;
+    --muted: #5b6878;
+    --line: #dbe3ec;
+    --blue: #3a96e8;
+    --blue-ink: #1f6fb8;
+    --yellow: #facd1e;
+    --star: #ffc83d;
+    --red: #e5483b;
+    --green: #2fa66a;
+    --shadow: 0 1px 2px rgba(20, 30, 45, .06), 0 8px 24px rgba(20, 30, 45, .06);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f141b;
+      --surface: #171e27;
+      --surface-2: #1e2732;
+      --text: #e8eef5;
+      --muted: #9aa8b8;
+      --line: #2a3542;
+      --blue: #5aaaf0;
+      --blue-ink: #8cc4f5;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .25);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f141b;
+    --surface: #171e27;
+    --surface-2: #1e2732;
+    --text: #e8eef5;
+    --muted: #9aa8b8;
+    --line: #2a3542;
+    --blue: #5aaaf0;
+    --blue-ink: #8cc4f5;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .25);
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 17px/1.6 "Rubik", system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  a { color: var(--blue-ink); }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding: 56px 0 0;
+    background: linear-gradient(180deg, #9fd6ff 0%, #c9ecff 62%, #e9f7ff 100%);
+    color: #17202b;
+  }
+  .hero .wrap { position: relative; z-index: 2; text-align: center; }
+  .hero h1 {
+    margin: 0;
+    font-size: clamp(48px, 10vw, 92px);
+    font-weight: 800;
+    letter-spacing: -.02em;
+    line-height: 1;
+    color: #12385e;
+  }
+  .hero h1 span { color: var(--yellow); -webkit-text-stroke: 2px #12385e; paint-order: stroke fill; }
+  .hero .tag { margin: 14px auto 4px; font-size: clamp(18px, 2.6vw, 23px); font-weight: 500; max-width: 640px; }
+  .hero .he { margin: 0; font-size: 18px; color: #2c4a66; direction: rtl; }
+  .stats { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 24px 0 0; padding: 0; list-style: none; }
+  .stats li {
+    background: rgba(255, 255, 255, .78);
+    border: 1px solid rgba(18, 56, 94, .12);
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 15px;
+  }
+  .stats b { color: #12385e; font-size: 18px; margin-right: 4px; }
+  .hero-stage { position: relative; height: 230px; margin-top: 18px; }
+  .cloud { position: absolute; background: #fff; border-radius: 999px; opacity: .85; animation: drift linear infinite; }
+  .cloud::before, .cloud::after { content: ""; position: absolute; background: #fff; border-radius: 50%; }
+  .cloud::before { width: 55%; height: 160%; left: 15%; bottom: 20%; }
+  .cloud::after { width: 40%; height: 120%; right: 12%; bottom: 25%; }
+  .c1 { width: 120px; height: 30px; top: 20px; animation-duration: 38s; }
+  .c2 { width: 80px; height: 22px; top: 70px; animation-duration: 52s; animation-delay: -20s; }
+  .c3 { width: 150px; height: 36px; top: -10px; animation-duration: 64s; animation-delay: -40s; }
+  @keyframes drift { from { transform: translateX(-200px); } to { transform: translateX(110vw); } }
+  .hero-road {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 70px;
+    background: #4a4f57;
+    border-top: 8px solid #d8d2c4;
+  }
+  .hero-road::after {
+    content: ""; position: absolute; left: 0; right: 0; top: 28px; height: 5px;
+    background: repeating-linear-gradient(90deg, #fff 0 36px, transparent 36px 72px);
+    animation: roadmove .6s linear infinite;
+  }
+  @keyframes roadmove { from { background-position: 0 0; } to { background-position: -72px 0; } }
+  .hero-car {
+    position: absolute; left: 50%; bottom: 26px; width: 210px; margin-left: -105px; z-index: 3;
+    animation: bob .5s ease-in-out infinite alternate;
+    filter: drop-shadow(0 10px 6px rgba(0, 0, 0, .25));
+  }
+  @keyframes bob { from { transform: translateY(0); } to { transform: translateY(-4px); } }
+  .hero-star {
+    position: absolute; bottom: 150px; width: 34px; z-index: 3;
+    animation: rise 3s ease-out infinite; opacity: 0;
+  }
+  .hero-star.s1 { left: calc(50% + 70px); }
+  .hero-star.s2 { left: calc(50% - 110px); animation-delay: 1s; }
+  .hero-star.s3 { left: calc(50% + 10px); animation-delay: 2s; }
+  @keyframes rise {
+    0% { opacity: 0; transform: translateY(20px) scale(.4) rotate(-20deg); }
+    20% { opacity: 1; transform: translateY(0) scale(1.1) rotate(0); }
+    70% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(-60px) scale(.9) rotate(15deg); }
+  }
+
+  /* ---------- Sections ---------- */
+  section { padding: 64px 0; }
+  .eyebrow { font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--blue-ink); margin: 0 0 6px; }
+  h2 { font-size: clamp(28px, 4vw, 38px); line-height: 1.15; margin: 0 0 12px; letter-spacing: -.01em; }
+  .lead { color: var(--muted); max-width: 680px; margin: 0; font-size: 18px; }
+
+  /* The game loop */
+  .loop { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 28px; counter-reset: step; }
+  .step {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 18px 16px 16px;
+    box-shadow: var(--shadow);
+    animation: glow 8s infinite;
+  }
+  .step:nth-child(2) { animation-delay: 2s; }
+  .step:nth-child(3) { animation-delay: 4s; }
+  .step:nth-child(4) { animation-delay: 6s; }
+  @keyframes glow {
+    0%, 25%, 100% { border-color: var(--line); transform: none; }
+    3%, 22% { border-color: var(--blue); transform: translateY(-4px); }
+  }
+  .step .icon { font-size: 30px; line-height: 1; }
+  .step h3 { margin: 10px 0 4px; font-size: 18px; }
+  .step p { margin: 0; color: var(--muted); font-size: 15px; }
+  .step::after {
+    content: "→"; position: absolute; right: -14px; top: 50%; transform: translateY(-50%);
+    color: var(--muted); font-size: 18px; width: 14px; text-align: center;
+  }
+  .step:last-child::after { content: ""; }
+  .situations { margin-top: 18px; display: flex; gap: 10px; flex-wrap: wrap; }
+  .chip { background: var(--surface-2); border-radius: 999px; padding: 6px 14px; font-size: 15px; }
+
+  /* Milestones */
+  .timeline { list-style: none; margin: 28px 0 0; padding: 0; display: flex; gap: 8px; flex-wrap: wrap; }
+  .timeline a {
+    display: inline-block; text-decoration: none; color: var(--text);
+    background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; font-size: 14px;
+  }
+  .timeline a:hover { border-color: var(--blue); }
+  .timeline b { color: var(--blue-ink); margin-right: 4px; }
+
+  .chapter {
+    display: grid; grid-template-columns: 1.1fr 1fr; gap: 36px; align-items: start;
+    padding: 44px 0; border-top: 1px solid var(--line);
+  }
+  .chapter:nth-of-type(even) .scenes { order: 2; }
+  .scenes { display: grid; gap: 14px; position: sticky; top: 16px; }
+  .scene {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 18px;
+    overflow: hidden; box-shadow: var(--shadow);
+  }
+  .scene svg { display: block; width: 100%; height: auto; }
+  .scene figcaption { padding: 10px 14px; font-size: 14px; color: var(--muted); border-top: 1px solid var(--line); }
+  .badge {
+    display: inline-block; font-size: 13px; font-weight: 700; letter-spacing: .06em;
+    background: var(--blue); color: #fff; border-radius: 6px; padding: 2px 8px;
+  }
+  .chapter h3 { font-size: clamp(24px, 3vw, 30px); margin: 10px 0 8px; line-height: 1.2; }
+  .goal { margin: 0 0 14px; color: var(--muted); }
+  .gets { list-style: none; padding: 0; margin: 0 0 16px; }
+  .gets li { position: relative; padding-left: 30px; margin: 8px 0; }
+  .gets li::before {
+    content: "★"; position: absolute; left: 0; top: 0; color: var(--star); font-size: 20px; line-height: 1.3;
+  }
+  details {
+    background: var(--surface-2); border-radius: 14px; padding: 4px 16px;
+  }
+  details[open] { padding-bottom: 12px; }
+  summary { cursor: pointer; font-weight: 500; padding: 10px 0; list-style: none; display: flex; align-items: center; gap: 8px; }
+  summary::-webkit-details-marker { display: none; }
+  summary::before { content: "▸"; transition: transform .2s; color: var(--blue-ink); }
+  details[open] summary::before { transform: rotate(90deg); }
+  details ol { margin: 0; padding-left: 24px; font-size: 15.5px; }
+  details li { margin: 6px 0; }
+  details h4 { margin: 12px 0 2px; font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+  .prd-link { display: inline-block; margin-top: 12px; font-size: 15px; font-weight: 500; }
+
+  /* Rules for every milestone */
+  .rules { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin-top: 28px; }
+  .rule { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px; box-shadow: var(--shadow); }
+  .rule .icon { font-size: 28px; }
+  .rule h3 { font-size: 17px; margin: 8px 0 4px; }
+  .rule p { margin: 0; color: var(--muted); font-size: 15px; }
+
+  footer { padding: 40px 0 60px; border-top: 1px solid var(--line); color: var(--muted); font-size: 15px; text-align: center; }
+
+  /* Reveal on scroll, only when JavaScript runs */
+  .js .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s ease; }
+  .js .reveal.in { opacity: 1; transform: none; }
+
+  @media (max-width: 820px) {
+    .chapter { grid-template-columns: 1fr; gap: 20px; }
+    .chapter:nth-of-type(even) .scenes { order: 0; }
+    .scenes { position: static; }
+    .loop { grid-template-columns: 1fr 1fr; }
+    .step::after { content: ""; }
+  }
+  @media (max-width: 420px) {
+    .loop { grid-template-columns: 1fr; }
+    body { font-size: 16px; }
+  }
+
+  /* ---------- Scene animations ---------- */
+  .pop { transform-box: fill-box; transform-origin: center; }
+  .label { font: 700 13px "Rubik", system-ui, sans-serif; fill: #fff; }
+  .label-bg { fill: rgba(15, 20, 27, .72); }
+  .svg-text { font-family: "Rubik", system-ui, sans-serif; }
+
+  /* 2: traffic light, 10s */
+  .tl-car { animation: tlCar 10s infinite; }
+  @keyframes tlCar {
+    0% { transform: translateX(-30px); animation-timing-function: cubic-bezier(.2, .6, .4, 1); }
+    22% { transform: translateX(228px); }
+    42% { transform: translateX(228px); animation-timing-function: ease-in; }
+    62%, 100% { transform: translateX(470px); }
+  }
+  .lamp-r { animation: lampR 10s infinite; }
+  .lamp-y { animation: lampY 10s infinite; }
+  .lamp-g { animation: lampG 10s infinite; }
+  @keyframes lampR { 0%, 39.9% { opacity: 1; } 40%, 89.9% { opacity: .14; } 90%, 100% { opacity: 1; } }
+  @keyframes lampY { 0%, 29.9% { opacity: .14; } 30%, 39.9% { opacity: 1; } 40%, 79.9% { opacity: .14; } 80%, 89.9% { opacity: 1; } 90%, 100% { opacity: .14; } }
+  @keyframes lampG {
+    0%, 39.9% { opacity: .14; } 40%, 72.4% { opacity: 1; } 72.5%, 74.9% { opacity: .14; }
+    75%, 77.4% { opacity: 1; } 77.5%, 100% { opacity: .14; }
+  }
+  .tl-s2 { animation: tlS2 10s infinite; }
+  .tl-s3 { animation: tlS3 10s infinite; }
+  .tl-s4 { animation: tlS4 10s infinite; }
+  .tl-s5 { animation: tlS5 10s infinite; }
+  .tl-s1 { animation: tlS1 10s infinite; }
+  @keyframes tlS1 { 0%, 29.9% { opacity: 1; } 30%, 89.9% { opacity: 0; } 90%, 100% { opacity: 1; } }
+  @keyframes tlS2 { 0%, 29.9% { opacity: 0; } 30%, 39.9% { opacity: 1; } 40%, 100% { opacity: 0; } }
+  @keyframes tlS3 { 0%, 39.9% { opacity: 0; } 40%, 69.9% { opacity: 1; } 70%, 100% { opacity: 0; } }
+  @keyframes tlS4 { 0%, 69.9% { opacity: 0; } 70%, 79.9% { opacity: 1; } 80%, 100% { opacity: 0; } }
+  @keyframes tlS5 { 0%, 79.9% { opacity: 0; } 80%, 89.9% { opacity: 1; } 90%, 100% { opacity: 0; } }
+  .tl-star { animation: starPop 10s infinite; }
+  @keyframes starPop {
+    0%, 35% { opacity: 0; transform: scale(0); }
+    39% { opacity: 1; transform: scale(1.3); }
+    42%, 52% { opacity: 1; transform: scale(1) translateY(-6px); }
+    58%, 100% { opacity: 0; transform: scale(.6) translateY(-24px); }
+  }
+
+  /* 3: speed limits, 8s */
+  .needle { transform-box: view-box; transform-origin: 290px 132px; animation: needle 8s infinite; }
+  @keyframes needle {
+    0% { transform: rotate(-120deg); animation-timing-function: ease-out; }
+    25%, 45% { transform: rotate(-37.7deg); }
+    46% { transform: rotate(-37.7deg); animation-timing-function: ease-in-out; }
+    66%, 90% { transform: rotate(-72deg); }
+    100% { transform: rotate(-120deg); }
+  }
+  .sign50 { animation: sign50 8s infinite; }
+  .sign30 { animation: sign30 8s infinite; }
+  @keyframes sign50 { 0%, 39.9% { opacity: 1; } 40%, 95% { opacity: 0; } 96%, 100% { opacity: 1; } }
+  @keyframes sign30 { 0%, 39.9% { opacity: 0; } 40%, 95% { opacity: 1; } 96%, 100% { opacity: 0; } }
+  .school { animation: school 8s infinite; }
+  @keyframes school {
+    0%, 39.9% { opacity: 0; transform: translateY(12px); }
+    44%, 95% { opacity: 1; transform: none; }
+    100% { opacity: 0; }
+  }
+  .read48 { animation: read48 8s infinite; }
+  .read28 { animation: read28 8s infinite; }
+  @keyframes read48 { 0%, 17% { opacity: 0; fill: #2fa66a; } 20%, 39.9% { opacity: 1; fill: #2fa66a; } 40%, 57% { opacity: 1; fill: #f08c1a; } 60%, 100% { opacity: 0; fill: #f08c1a; } }
+  @keyframes read28 { 0%, 60% { opacity: 0; } 64%, 92% { opacity: 1; } 96%, 100% { opacity: 0; } }
+  .over { animation: over 8s infinite; }
+  @keyframes over { 0%, 39.9% { opacity: 0; } 40%, 58% { opacity: 1; } 60%, 100% { opacity: 0; } }
+  .sp-star { animation: spStar 8s infinite; }
+  @keyframes spStar {
+    0%, 70% { opacity: 0; transform: scale(0); }
+    74% { opacity: 1; transform: scale(1.3); }
+    77%, 86% { opacity: 1; transform: scale(1) translateY(-4px); }
+    92%, 100% { opacity: 0; transform: scale(.6) translateY(-20px); }
+  }
+
+  /* 4: crosswalk, 10s */
+  .cw-car { animation: cwCar 10s infinite; }
+  @keyframes cwCar {
+    0% { transform: translateX(-30px); animation-timing-function: cubic-bezier(.2, .6, .4, 1); }
+    24% { transform: translateX(225px); }
+    72% { transform: translateX(225px); animation-timing-function: ease-in; }
+    92%, 100% { transform: translateX(470px); }
+  }
+  .cw-car2 { animation: cwCar2 10s infinite; }
+  @keyframes cwCar2 {
+    0% { transform: translateX(440px); animation-timing-function: cubic-bezier(.2, .6, .4, 1); }
+    20% { transform: translateX(316px); }
+    72% { transform: translateX(316px); animation-timing-function: ease-in; }
+    92%, 100% { transform: translateX(-60px); }
+  }
+  .walker { animation: walker 10s infinite; }
+  @keyframes walker {
+    0% { transform: translate(270px, 52px); opacity: 0; }
+    4%, 28% { transform: translate(270px, 52px); opacity: 1; }
+    70% { transform: translate(270px, 168px); opacity: 1; }
+    78%, 100% { transform: translate(300px, 168px); opacity: 0; }
+  }
+  .walker-head { animation: look 10s infinite; transform-box: fill-box; transform-origin: center; }
+  @keyframes look { 0%, 8% { transform: none; } 12%, 16% { transform: translateX(-2px); } 20%, 24% { transform: translateX(2px); } 28%, 100% { transform: none; } }
+  .cw-star { animation: cwStar 10s infinite; }
+  @keyframes cwStar {
+    0%, 70% { opacity: 0; transform: scale(0); }
+    74% { opacity: 1; transform: scale(1.3); }
+    77%, 86% { opacity: 1; transform: scale(1) translateY(-4px); }
+    92%, 100% { opacity: 0; transform: scale(.6) translateY(-20px); }
+  }
+
+  /* 6: lessons and license, 10s */
+  .route { stroke-dasharray: 280; animation: route 10s infinite; }
+  @keyframes route { 0% { stroke-dashoffset: 280; } 50%, 96% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 280; } }
+  .cp1 { animation-name: cp1; } .cp2 { animation-name: cp2; } .cp3 { animation-name: cp3; } .cp4 { animation-name: cp4; }
+  @keyframes cp1 { 0%, 13.9% { fill: #fff; } 14%, 96% { fill: #ffc83d; } 100% { fill: #fff; } }
+  @keyframes cp2 { 0%, 28.5% { fill: #fff; } 28.6%, 96% { fill: #ffc83d; } 100% { fill: #fff; } }
+  @keyframes cp3 { 0%, 38.9% { fill: #fff; } 39%, 96% { fill: #ffc83d; } 100% { fill: #fff; } }
+  @keyframes cp4 { 0%, 49.9% { fill: #fff; } 50%, 96% { fill: #2fa66a; } 100% { fill: #fff; } }
+  .ls1, .ls2, .ls3 { transform-box: fill-box; transform-origin: center; }
+  .ls1 { animation: ls1 10s infinite; } .ls2 { animation: ls2 10s infinite; } .ls3 { animation: ls3 10s infinite; }
+  @keyframes ls1 { 0%, 13.9% { opacity: .2; transform: scale(.8); } 15% { opacity: 1; transform: scale(1.35); } 18%, 96% { opacity: 1; transform: none; } 100% { opacity: .2; } }
+  @keyframes ls2 { 0%, 28.5% { opacity: .2; transform: scale(.8); } 30% { opacity: 1; transform: scale(1.35); } 33%, 96% { opacity: 1; transform: none; } 100% { opacity: .2; } }
+  @keyframes ls3 { 0%, 38.9% { opacity: .2; transform: scale(.8); } 40% { opacity: 1; transform: scale(1.35); } 43%, 96% { opacity: 1; transform: none; } 100% { opacity: .2; } }
+  .passed { animation: passed 10s infinite; }
+  @keyframes passed { 0%, 50% { opacity: 0; } 53%, 96% { opacity: 1; } 100% { opacity: 0; } }
+  .license { animation: license 10s infinite; }
+  @keyframes license {
+    0%, 58% { opacity: 0; transform: translate(220px, 70px) rotate(8deg); }
+    68% { opacity: 1; transform: translate(220px, 32px) rotate(-3deg); }
+    72%, 95% { opacity: 1; transform: translate(220px, 36px) rotate(0); }
+    100% { opacity: 0; transform: translate(220px, 36px); }
+  }
+
+  /* 7: day and night, 12s */
+  .sky { animation: sky 12s infinite; }
+  @keyframes sky {
+    0% { fill: #a8dcff; } 50% { fill: #8fd0ff; } 56% { fill: #ffb36b; } 61% { fill: #6a4f7e; }
+    66%, 84% { fill: #141a3a; } 89% { fill: #6a5a8a; } 94% { fill: #ffc48c; } 100% { fill: #a8dcff; }
+  }
+  .sun { animation: sun 12s infinite linear; }
+  @keyframes sun {
+    0% { transform: translate(50px, 110px); opacity: 1; }
+    25% { transform: translate(200px, 34px); }
+    55% { transform: translate(330px, 100px); opacity: 1; }
+    62% { transform: translate(360px, 150px); opacity: 0; }
+    90% { transform: translate(20px, 150px); opacity: 0; }
+    94% { opacity: 1; }
+    100% { transform: translate(50px, 110px); opacity: 1; }
+  }
+  .moon { animation: moon 12s infinite linear; }
+  @keyframes moon {
+    0%, 62% { transform: translate(60px, 70px); opacity: 0; }
+    66% { opacity: 1; }
+    84% { opacity: 1; }
+    88%, 100% { transform: translate(320px, 50px); opacity: 0; }
+  }
+  .night { animation: night 12s infinite; }
+  @keyframes night { 0%, 58% { opacity: 0; } 64%, 86% { opacity: 1; } 92%, 100% { opacity: 0; } }
+  .dark { animation: dark 12s infinite; }
+  @keyframes dark { 0%, 54% { opacity: 0; } 64%, 86% { opacity: .5; } 94%, 100% { opacity: 0; } }
+  .dn-car { animation: dnCar 6s infinite linear; }
+  @keyframes dnCar { from { transform: translateX(-70px); } to { transform: translateX(470px); } }
+  .dn-s1 { animation: dnS1 12s infinite; } .dn-s2 { animation: dnS2 12s infinite; }
+  .dn-s3 { animation: dnS3 12s infinite; } .dn-s4 { animation: dnS4 12s infinite; }
+  @keyframes dnS1 { 0%, 52.9% { opacity: 1; } 53%, 100% { opacity: 0; } }
+  @keyframes dnS2 { 0%, 52.9% { opacity: 0; } 53%, 63.9% { opacity: 1; } 64%, 100% { opacity: 0; } }
+  @keyframes dnS3 { 0%, 63.9% { opacity: 0; } 64%, 85.9% { opacity: 1; } 86%, 100% { opacity: 0; } }
+  @keyframes dnS4 { 0%, 85.9% { opacity: 0; } 86%, 99.9% { opacity: 1; } 100% { opacity: 0; } }
+
+  /* 7b: inside view */
+  .wheel { transform-box: view-box; transform-origin: 120px 204px; animation: wheel 6s infinite ease-in-out; }
+  @keyframes wheel { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-35deg); } 50% { transform: rotate(0); } 75% { transform: rotate(30deg); } }
+  .dash-line { stroke-dasharray: 10 14; animation: dash .8s infinite linear; }
+  @keyframes dash { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -24; } }
+  .road-view { transform-box: view-box; transform-origin: 200px 220px; animation: sway 6s infinite ease-in-out; }
+  @keyframes sway { 0%, 100% { transform: none; } 25% { transform: translateX(14px) skewX(-6deg); } 50% { transform: none; } 75% { transform: translateX(-12px) skewX(5deg); } }
+  .mini-needle { transform-box: view-box; transform-origin: 120px 178px; animation: miniNeedle 6s infinite ease-in-out; }
+  @keyframes miniNeedle { 0%, 100% { transform: rotate(-20deg); } 50% { transform: rotate(10deg); } }
+  .instructor-head { animation: nod 6s infinite ease-in-out; transform-box: fill-box; transform-origin: 50% 90%; }
+  @keyframes nod { 0%, 60%, 100% { transform: rotate(0); } 70%, 80% { transform: rotate(-6deg); } }
+
+  /* 8: brake lights, 9s */
+  .bl-car { animation: blCar 9s infinite; }
+  @keyframes blCar {
+    0% { transform: translateX(-70px); animation-timing-function: linear; }
+    14% { transform: translateX(150px); animation-timing-function: cubic-bezier(.1, .7, .3, 1); }
+    28% { transform: translateX(232px); }
+    58% { transform: translateX(232px); animation-timing-function: ease-in; }
+    80%, 100% { transform: translateX(480px); }
+  }
+  .brake { animation: brake 9s infinite; }
+  @keyframes brake { 0%, 13.9% { opacity: 0; } 14%, 59.9% { opacity: 1; } 60%, 100% { opacity: 0; } }
+  .bl-red { animation: blRed 9s infinite; }
+  .bl-green { animation: blGreen 9s infinite; }
+  @keyframes blRed { 0%, 54.9% { opacity: 1; } 55%, 100% { opacity: .15; } }
+  @keyframes blGreen { 0%, 54.9% { opacity: .15; } 55%, 100% { opacity: 1; } }
+  .bl-s1 { animation: blS1 9s infinite; } .bl-s2 { animation: blS2 9s infinite; }
+  .bl-s3 { animation: blS3 9s infinite; } .bl-s4 { animation: blS4 9s infinite; }
+  @keyframes blS1 { 0%, 13.9% { opacity: 1; } 14%, 100% { opacity: 0; } }
+  @keyframes blS2 { 0%, 13.9% { opacity: 0; } 14%, 27.9% { opacity: 1; } 28%, 100% { opacity: 0; } }
+  @keyframes blS3 { 0%, 27.9% { opacity: 0; } 28%, 57.9% { opacity: 1; } 58%, 100% { opacity: 0; } }
+  @keyframes blS4 { 0%, 57.9% { opacity: 0; } 58%, 100% { opacity: 1; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Shared drawings, used by the scenes below. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- A car seen from above, facing right (+x). Its paint comes from --car. -->
+    <g id="carTop">
+      <rect x="-12" y="-6.5" width="24" height="13" rx="3.5" fill="var(--car, #3a96e8)"/>
+      <rect x="-4" y="-5.2" width="11" height="10.4" rx="2.2" fill="#1d2b38" opacity=".85"/>
+      <rect x="-3" y="-4.4" width="7" height="8.8" rx="1.5" fill="var(--car, #3a96e8)"/>
+      <rect x="10.4" y="-5.4" width="1.8" height="2.6" rx=".6" fill="#fff4c8"/>
+      <rect x="10.4" y="2.8" width="1.8" height="2.6" rx=".6" fill="#fff4c8"/>
+      <rect x="-12.2" y="-5.4" width="1.6" height="2.6" rx=".5" fill="#a32020"/>
+      <rect x="-12.2" y="2.8" width="1.6" height="2.6" rx=".5" fill="#a32020"/>
+    </g>
+    <!-- The Bendi car from above: blue, with big eyes on the hood. -->
+    <g id="bendi">
+      <use href="#carTop" style="--car:#3a96e8"/>
+      <circle cx="8" cy="-2.8" r="2.3" fill="#fff"/>
+      <circle cx="8" cy="2.8" r="2.3" fill="#fff"/>
+      <circle cx="9" cy="-2.8" r="1.1" fill="#17202b"/>
+      <circle cx="9" cy="2.8" r="1.1" fill="#17202b"/>
+    </g>
+    <!-- A car seen from the side, facing right, wheels on y = 9. -->
+    <g id="carSide">
+      <path d="M-46,-2 L-46,-16 Q-45,-21 -38,-21 L-26,-21 L-15,-36 L15,-36 L28,-21 L40,-19 Q47,-17 47,-9 L47,-2 Z" fill="var(--car, #3a96e8)"/>
+      <path d="M-22,-22 L-13,-33 L-1,-33 L-1,-22 Z M2,-22 L2,-33 L13,-33 L24,-22 Z" fill="#1d2b38" opacity=".85"/>
+      <rect x="-47" y="-5" width="94" height="4" rx="2" fill="#2a2d33"/>
+      <rect x="44" y="-15" width="3" height="5" rx="1" fill="#fff4c8"/>
+      <circle cx="-27" cy="0" r="9" fill="#1c1c1e"/><circle cx="-27" cy="0" r="4.2" fill="#c4c6cc"/>
+      <circle cx="28" cy="0" r="9" fill="#1c1c1e"/><circle cx="28" cy="0" r="4.2" fill="#c4c6cc"/>
+    </g>
+    <g id="star">
+      <path d="M0,-10 L2.9,-4 9.5,-3.1 4.7,1.5 5.9,8.1 0,5 -5.9,8.1 -4.7,1.5 -9.5,-3.1 -2.9,-4 Z" fill="#ffc83d" stroke="#c98a00" stroke-width="1.2" stroke-linejoin="round"/>
+    </g>
+    <radialGradient id="redGlow">
+      <stop offset="0" stop-color="#ff3b2f" stop-opacity=".95"/>
+      <stop offset="1" stop-color="#ff3b2f" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="lampCone" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffe29a" stop-opacity=".75"/>
+      <stop offset="1" stop-color="#ffe29a" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="beam" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#fff3c4" stop-opacity=".8"/>
+      <stop offset="1" stop-color="#fff3c4" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>Bendi <span>Go</span></h1>
+    <p class="tag">An open-source Roblox game where kids learn Israeli traffic rules by driving, and earn a star for every rule they follow.</p>
+    <p class="he">לומדים חוקי תנועה בנהיגה</p>
+    <ul class="stats">
+      <li><b>8</b>milestones</li>
+      <li><b>86</b>requirements</li>
+      <li><b>5</b>rules to learn</li>
+      <li><b>2</b>languages: English and Hebrew</li>
+    </ul>
+  </div>
+  <div class="hero-stage" aria-hidden="true">
+    <div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
+    <svg class="hero-star s1" viewBox="-12 -12 24 24"><use href="#star"/></svg>
+    <svg class="hero-star s2" viewBox="-12 -12 24 24"><use href="#star"/></svg>
+    <svg class="hero-star s3" viewBox="-12 -12 24 24"><use href="#star"/></svg>
+    <img class="hero-car" src="images/bendi-go-car.png" alt="">
+    <div class="hero-road"></div>
+  </div>
+</header>
+
+<main>
+  <section>
+    <div class="wrap reveal">
+      <p class="eyebrow">How it works</p>
+      <h2>Drive, follow the rule, earn a star</h2>
+      <p class="lead">Instead of memorizing rules from a book, players get behind the wheel of Bendi, a friendly blue car, and drive around a small Israeli neighborhood. Every time they handle a traffic situation the right way, they earn a star. Bendi is built by Ben &amp; Dima, a father-and-son team.</p>
+      <div class="loop">
+        <div class="step"><div class="icon">🚗</div><h3>Drive</h3><p>Explore a town with streets, sidewalks, shops, and parked cars.</p></div>
+        <div class="step"><div class="icon">🚦</div><h3>Meet a rule</h3><p>A red light, a speed sign, someone at a crosswalk, or a roundabout.</p></div>
+        <div class="step"><div class="icon">✋</div><h3>Do it right</h3><p>Stop, slow down, or give way, just like a real Israeli driver.</p></div>
+        <div class="step"><div class="icon">⭐</div><h3>Earn a star</h3><p>Mistakes never cost stars. Bendi gives a friendly tip instead.</p></div>
+      </div>
+      <div class="situations">
+        <span class="chip">🚦 Stop at red, go on green</span>
+        <span class="chip">🔄 Give way in the roundabout</span>
+        <span class="chip">🚸 Let pedestrians cross</span>
+        <span class="chip">⏱️ Keep to the speed limit</span>
+        <span class="chip">🛑 Stop fully at stop signs</span>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap">
+      <div class="reveal">
+        <p class="eyebrow">Milestones</p>
+        <h2>The game, one milestone at a time</h2>
+        <p class="lead">Each milestone adds one thing to learn and ends with a version kids can play. Here is every requirement, grouped by milestone, with a picture of what it looks like in the game.</p>
+        <ol class="timeline">
+          <li><a href="#prd-001"><b>1</b>Drive around town</a></li>
+          <li><a href="#prd-002"><b>2</b>Traffic lights</a></li>
+          <li><a href="#prd-003"><b>3</b>Speed limits</a></li>
+          <li><a href="#prd-004"><b>4</b>Crosswalks</a></li>
+          <li><a href="#prd-005"><b>5</b>Roundabouts</a></li>
+          <li><a href="#prd-006"><b>6</b>Lessons and license</a></li>
+          <li><a href="#prd-007"><b>7</b>Realistic graphics</a></li>
+          <li><a href="#prd-008"><b>8</b>Brake lights</a></li>
+        </ol>
+      </div>
+
+      <!-- PRD-001 -->
+      <article class="chapter reveal" id="prd-001">
+        <div class="scenes">
+          <figure class="scene" style="margin:0">
+            <svg viewBox="0 0 400 240" role="img" aria-label="The Bendi car driving around a block of the town, on the right side of the road">
+              <rect width="400" height="240" fill="#a9d18e"/>
+              <!-- Blocks with sidewalks, buildings, and trees -->
+              <g fill="#d8d2c4">
+                <rect x="0" y="0" width="82" height="42"/><rect x="118" y="0" width="164" height="42"/><rect x="318" y="0" width="82" height="42"/>
+                <rect x="0" y="78" width="82" height="84"/><rect x="118" y="78" width="164" height="84"/><rect x="318" y="78" width="82" height="84"/>
+                <rect x="0" y="198" width="82" height="42"/><rect x="118" y="198" width="164" height="42"/><rect x="318" y="198" width="82" height="42"/>
+              </g>
+              <g fill="#f1e7d3" stroke="#c9b99a">
+                <rect x="132" y="90" width="48" height="36" rx="2"/><rect x="190" y="90" width="38" height="58" rx="2"/>
+                <rect x="238" y="104" width="34" height="44" rx="2"/><rect x="10" y="90" width="60" height="30" rx="2"/>
+                <rect x="328" y="90" width="60" height="40" rx="2"/><rect x="140" y="6" width="56" height="28" rx="2"/>
+                <rect x="210" y="206" width="56" height="28" rx="2"/>
+              </g>
+              <g fill="#e6e0d0"><rect x="140" y="94" width="10" height="6"/><rect x="160" y="94" width="10" height="6"/><rect x="200" y="96" width="10" height="6"/><rect x="200" y="112" width="10" height="6"/></g>
+              <g fill="#3f8f4a">
+                <circle cx="146" cy="140" r="7"/><circle cx="20" cy="140" r="7"/><circle cx="60" cy="140" r="6"/>
+                <circle cx="350" cy="146" r="7"/><circle cx="380" cy="146" r="6"/><circle cx="240" cy="20" r="7"/>
+                <circle cx="190" cy="220" r="7"/><circle cx="350" cy="220" r="7"/><circle cx="50" cy="20" r="6"/>
+              </g>
+              <!-- Roads: two across, two down -->
+              <g fill="#4a4f57">
+                <rect x="0" y="42" width="400" height="36"/><rect x="0" y="162" width="400" height="36"/>
+                <rect x="82" y="0" width="36" height="240"/><rect x="282" y="0" width="36" height="240"/>
+              </g>
+              <g stroke="#fff" stroke-width="1.6" stroke-dasharray="8 8">
+                <line x1="0" y1="60" x2="82" y2="60"/><line x1="118" y1="60" x2="282" y2="60"/><line x1="318" y1="60" x2="400" y2="60"/>
+                <line x1="0" y1="180" x2="82" y2="180"/><line x1="118" y1="180" x2="282" y2="180"/><line x1="318" y1="180" x2="400" y2="180"/>
+                <line x1="100" y1="0" x2="100" y2="42"/><line x1="100" y1="78" x2="100" y2="162"/><line x1="100" y1="198" x2="100" y2="240"/>
+                <line x1="300" y1="0" x2="300" y2="42"/><line x1="300" y1="78" x2="300" y2="162"/><line x1="300" y1="198" x2="300" y2="240"/>
+              </g>
+              <!-- Parked cars -->
+              <use href="#carTop" transform="translate(200,74) scale(.8)" style="--car:#e8e8e8"/>
+              <use href="#carTop" transform="translate(240,74) scale(.8)" style="--car:#c8483c"/>
+              <use href="#carTop" transform="translate(170,166) scale(.8) rotate(180)" style="--car:#5a6a7a"/>
+              <!-- Bendi drives around the block, always on the right side of the road -->
+              <g>
+                <use href="#bendi">
+                  <animateMotion dur="9s" repeatCount="indefinite" rotate="auto"
+                    path="M120,69 H281 Q291,69 291,79 V161 Q291,171 281,171 H119 Q109,171 109,161 V79 Q109,69 120,69 Z"/>
+                </use>
+              </g>
+              <rect class="label-bg" x="10" y="208" width="152" height="24" rx="12"/>
+              <text class="label" x="22" y="224">Right-hand traffic</text>
+            </svg>
+            <figcaption>Bendi drives on the right, through a small Israeli neighborhood.</figcaption>
+          </figure>
+        </div>
+        <div>
+          <span class="badge">PRD-001</span>
+          <h3>Drive around town</h3>
+          <p class="goal">Give players a car they can drive around a small Israeli neighborhood. Driving should be fun on its own, because everything after this needs players who want to drive.</p>
+          <ul class="gets">
+            <li>Your own Bendi car: blue, big eyes, and a yellow "BENDI GO" plate.</li>
+            <li>Drive with the keyboard, a gamepad, or touch pedals on a phone.</li>
+            <li>A town with streets, sidewalks, buildings, trees, and parked cars.</li>
+            <li>A "Reset car" button if you get stuck.</li>
+          </ul>
+          <details>
+            <summary>All 12 requirements</summary>
+            <h4>Game</h4>
+            <ol>
+              <li>Every player gets their own Bendi car: blue, with big eyes and a yellow "BENDI GO" license plate.</li>
+              <li>Drive with the keyboard (W/S or arrows to drive and reverse, A/D to steer, Space to brake), a gamepad (triggers and left stick), or touch (on-screen pedals and steering).</li>
+              <li>The top speed is about 70 km/h, so the 50 km/h town limit means something later.</li>
+              <li>The camera follows the car from behind and a little above.</li>
+              <li>One small neighborhood: at least 4 blocks and 4 crossings, two-way streets with right-hand traffic, lane markings and sidewalks, buildings, trees, and parked cars, walls at the map edges, and space saved for a roundabout.</li>
+              <li>A "Reset car" button puts the car upright on the nearest road, facing the way traffic goes.</li>
+              <li>Players' cars never collide with each other.</li>
+              <li>One fixed scale for every speed: 1 stud is 0.28 m.</li>
+            </ol>
+            <h4>Project setup</h4>
+            <ol start="9">
+              <li>A Rojo project maps the source folders into Roblox.</li>
+              <li>Pinned versions of Rojo, StyLua, and Selene, installed with a toolchain manager.</li>
+              <li>Unit tests run outside Roblox Studio and fail if line coverage drops below 95%.</li>
+              <li>CLAUDE.md and README.md explain how to build, sync, lint, format, and test.</li>
+            </ol>
+          </details>
+          <a class="prd-link" href="https://github.com/dimastatz/bendi-go/blob/main/specs/prd-001-drive-around-town.md">Read the full PRD →</a>
+        </div>
+      </article>
+
+      <!-- PRD-002 -->
+      <article class="chapter reveal" id="prd-002">
+        <div class="scenes">
+          <figure class="scene" style="margin:0">
+            <svg viewBox="0 0 400 220" role="img" aria-label="An Israeli traffic light goes red, red and yellow, green, flashing green, and yellow. The car stops at the white line on red and earns a star.">
+              <rect width="400" height="220" fill="#a9d18e"/>
+              <rect x="0" y="66" width="400" height="12" fill="#d8d2c4"/><rect x="0" y="150" width="400" height="12" fill="#d8d2c4"/>
+              <rect x="262" y="0" width="72" height="220" fill="#d8d2c4"/>
+              <rect x="0" y="78" width="400" height="72" fill="#4a4f57"/>
+              <rect x="268" y="0" width="60" height="220" fill="#4a4f57"/>
+              <g stroke="#fff" stroke-width="2" stroke-dasharray="10 10"><line x1="0" y1="114" x2="262" y2="114"/><line x1="334" y1="114" x2="400" y2="114"/></g>
+              <rect x="252" y="116" width="5" height="34" fill="#fff"/>
+              <!-- The traffic light on the corner -->
+              <rect x="356" y="150" width="5" height="70" fill="#8a9099"/>
+              <rect x="340" y="104" width="38" height="104" rx="8" fill="#22252a"/>
+              <circle class="lamp-r" cx="359" cy="124" r="11" fill="#ff3b2f"/>
+              <circle class="lamp-y" cx="359" cy="156" r="11" fill="#ffc21a" opacity=".14"/>
+              <circle class="lamp-g" cx="359" cy="188" r="11" fill="#2fe07a" opacity=".14"/>
+              <g class="tl-car"><use href="#bendi" transform="translate(0,132) scale(1.6)"/></g>
+              <g transform="translate(228,96)"><g class="pop tl-star" opacity="0"><use href="#star" transform="scale(1.4)"/></g></g>
+              <rect class="label-bg" x="10" y="10" width="200" height="28" rx="14"/>
+              <g class="label">
+                <text class="tl-s1" x="24" y="29">Red: stop and wait</text>
+                <text class="tl-s2" x="24" y="29" opacity="0">Red + yellow: get ready</text>
+                <text class="tl-s3" x="24" y="29" opacity="0">Green: go</text>
+                <text class="tl-s4" x="24" y="29" opacity="0">Flashing green: about to change</text>
+                <text class="tl-s5" x="24" y="29" opacity="0">Yellow: stop if you can</text>
+              </g>
+            </svg>
+            <figcaption>Israeli lights have two extra steps: flashing green, and red with yellow.</figcaption>
+          </figure>
+        </div>
+        <div>
+          <span class="badge">PRD-002</span>
+          <h3>Traffic lights and stars</h3>
+          <p class="goal">The core learning loop: see a rule, follow it, earn a star. Traffic lights come first because they are the easiest rule for a kid to understand.</p>
+          <ul class="gets">
+            <li>Real Israeli traffic lights at the crossings, with a white stop line.</li>
+            <li>A star for stopping at red and waiting for green.</li>
+            <li>A star counter, and friendly tips from Bendi in a speech bubble.</li>
+            <li>Bendi explains flashing green and red with yellow the first time.</li>
+          </ul>
+          <details>
+            <summary>All 10 requirements</summary>
+            <ol>
+              <li>At least 3 of the 4 crossings get traffic lights, each with a white stop line.</li>
+              <li>Lights go red → red and yellow → green → flashing green → yellow, and crossing directions are never green at the same time.</li>
+              <li>Green lasts about 15 seconds, flashing green 3, yellow 3, and red and yellow 2. All of it is set in one config file.</li>
+              <li>Stopping fully before the line at red and waiting for green earns a star. Running a red gets a tip. Crossing on yellow is never counted as a mistake.</li>
+              <li>Each light gives a player a star at most once a minute, so circling one crossing doesn't work.</li>
+              <li>A star counter is always on screen, with an animation and a sound for every new star.</li>
+              <li>Tips show as a speech bubble from Bendi for about 4 seconds.</li>
+              <li>Bendi explains flashing green and red and yellow the first time a player sees them.</li>
+              <li>All text is in English and Hebrew, following the player's Roblox language.</li>
+              <li>Stars last for the session. Saving them comes in PRD-006.</li>
+            </ol>
+          </details>
+          <a class="prd-link" href="https://github.com/dimastatz/bendi-go/blob/main/specs/prd-002-traffic-lights-and-stars.md">Read the full PRD →</a>
+        </div>
+      </article>
+
+      <!-- PRD-003 -->
+      <article class="chapter reveal" id="prd-003">
+        <div class="scenes">
+          <figure class="scene" style="margin:0">
+            <svg viewBox="0 0 400 220" role="img" aria-label="The speed limit sign changes from 50 to 30 near a school. The speedometer shows the car going too fast, then slowing to 28 km/h and earning a star.">
+              <rect width="400" height="220" fill="var(--surface-2)"/>
+              <!-- Speed sign -->
+              <rect x="106" y="150" width="8" height="70" fill="#8a9099"/>
+              <circle cx="110" cy="96" r="58" fill="#fff" stroke="#d9302a" stroke-width="12"/>
+              <text class="svg-text sign50" x="110" y="116" text-anchor="middle" font-size="56" font-weight="800" fill="#17202b">50</text>
+              <text class="svg-text sign30" x="110" y="116" text-anchor="middle" font-size="56" font-weight="800" fill="#17202b" opacity="0">30</text>
+              <!-- School ahead sign -->
+              <g class="school" opacity="0">
+                <path d="M40,204 L64,162 L88,204 Z" fill="#fff" stroke="#d9302a" stroke-width="5" stroke-linejoin="round"/>
+                <circle cx="58" cy="178" r="3.4" fill="#17202b"/><path d="M58,182 L56,196 M58,186 L52,192 M58,186 L63,190" stroke="#17202b" stroke-width="2.4" stroke-linecap="round"/>
+                <circle cx="70" cy="183" r="2.8" fill="#17202b"/><path d="M70,186 L69,197 M70,189 L74,193" stroke="#17202b" stroke-width="2.2" stroke-linecap="round"/>
+              </g>
+              <!-- Speedometer: 0 to 140 km/h over 240 degrees -->
+              <circle cx="290" cy="132" r="80" fill="#1b2027"/>
+              <circle cx="290" cy="132" r="80" fill="none" stroke="#2c333d" stroke-width="3"/>
+              <path class="over" d="M290,132 L215.5,102.8 A80,80 0 0 1 241.1,68.7 Z" fill="#f08c1a" fill-opacity=".45" opacity="0"/>
+              <g stroke="#cfd6df" stroke-linecap="round">
+                <line x1="290" y1="60" x2="290" y2="70" stroke-width="3" transform="rotate(-120 290 132)"/>
+                <line x1="290" y1="60" x2="290" y2="70" stroke-width="3" transform="rotate(-85.7 290 132)"/>
+                <line x1="290" y1="60" x2="290" y2="70" stroke-width="3" transform="rotate(-51.4 290 132)"/>
+                <line x1="290" y1="60" x2="290" y2="70" stroke-width="3" transform="rotate(-17.1 290 132)"/>
+                <line x1="290" y1="60" x2="290" y2="70" stroke-width="3" transform="rotate(17.1 290 132)"/>
+                <line x1="290" y1="60" x2="290" y2="70" stroke-width="3" transform="rotate(51.4 290 132)"/>
+                <line x1="290" y1="60" x2="290" y2="70" stroke-width="3" transform="rotate(85.7 290 132)"/>
+                <line x1="290" y1="60" x2="290" y2="70" stroke-width="3" transform="rotate(120 290 132)"/>
+              </g>
+              <g class="svg-text" fill="#cfd6df" font-size="11" text-anchor="middle">
+                <text x="245" y="162">0</text><text x="238" y="136">20</text><text x="249" y="107">40</text><text x="275" y="90">60</text>
+                <text x="305" y="90">80</text><text x="331" y="107">100</text><text x="342" y="136">120</text><text x="335" y="162">140</text>
+              </g>
+              <line class="needle" x1="290" y1="140" x2="290" y2="72" stroke="#ff5a3c" stroke-width="4" stroke-linecap="round"/>
+              <circle cx="290" cy="132" r="7" fill="#cfd6df"/>
+              <text class="svg-text read48" x="290" y="190" text-anchor="middle" font-size="22" font-weight="700" fill="#2fa66a" opacity="0">48 km/h</text>
+              <text class="svg-text read28" x="290" y="190" text-anchor="middle" font-size="22" font-weight="700" fill="#2fa66a" opacity="0">28 km/h</text>
+              <g transform="translate(352,64)"><g class="pop sp-star" opacity="0"><use href="#star" transform="scale(1.5)"/></g></g>
+            </svg>
+            <figcaption>The speedometer turns orange over the limit. Keeping to it for a whole street earns a star.</figcaption>
+          </figure>
+        </div>
+        <div>
+          <span class="badge">PRD-003</span>
+          <h3>Speed limits</h3>
+          <p class="goal">Teach players to notice speed signs and keep under the limit, especially where people are around, like near a school.</p>
+          <ul class="gets">
+            <li>A speedometer in km/h that shows the limit and turns orange when you're too fast.</li>
+            <li>50 km/h town streets, and 30 km/h on a quiet street and near the school.</li>
+            <li>Israeli speed signs, plus a "school ahead" sign.</li>
+            <li>A star for driving a whole street within the limit.</li>
+          </ul>
+          <details>
+            <summary>All 9 requirements</summary>
+            <ol>
+              <li>A speedometer shows the car's speed in km/h.</li>
+              <li>It also shows the current limit, and turns orange when the car is over it.</li>
+              <li>Town streets are 50 km/h, the Israeli default. A residential street and a school zone are 30 km/h.</li>
+              <li>Each zone starts with an Israeli speed sign (a red circle with the number) on the right. School zones also get a "school ahead" sign and a road marking.</li>
+              <li>Driving a whole street, from crossing to crossing, no more than 3 km/h over the limit earns a star. The margin keeps small bumps fair.</li>
+              <li>Each street gives a player a star at most once a minute.</li>
+              <li>Going more than 3 km/h over for more than 2 seconds shows a tip, at most once per street.</li>
+              <li>The first time a player enters a 30 km/h zone, Bendi explains why some streets are slower.</li>
+              <li>Waiting at a red light doesn't break a street or count against the player.</li>
+            </ol>
+          </details>
+          <a class="prd-link" href="https://github.com/dimastatz/bendi-go/blob/main/specs/prd-003-speed-limits.md">Read the full PRD →</a>
+        </div>
+      </article>
+
+      <!-- PRD-004 -->
+      <article class="chapter reveal" id="prd-004">
+        <div class="scenes">
+          <figure class="scene" style="margin:0">
+            <svg viewBox="0 0 400 220" role="img" aria-label="A pedestrian looks both ways and crosses at a zebra crosswalk while cars wait before the stripes. The Bendi car earns a star.">
+              <rect width="400" height="220" fill="#a9d18e"/>
+              <rect x="0" y="40" width="400" height="30" fill="#d8d2c4"/><rect x="0" y="150" width="400" height="30" fill="#d8d2c4"/>
+              <rect x="0" y="70" width="400" height="80" fill="#4a4f57"/>
+              <g stroke="#fff" stroke-width="2" stroke-dasharray="10 10"><line x1="0" y1="110" x2="246" y2="110"/><line x1="294" y1="110" x2="400" y2="110"/></g>
+              <g fill="#f4f4f4">
+                <rect x="250" y="73" width="40" height="7"/><rect x="250" y="87" width="40" height="7"/><rect x="250" y="101" width="40" height="7"/>
+                <rect x="250" y="115" width="40" height="7"/><rect x="250" y="129" width="40" height="7"/><rect x="250" y="143" width="40" height="5"/>
+              </g>
+              <!-- Crosswalk signs: blue square with a walking person -->
+              <g transform="translate(232,18)"><rect width="18" height="18" rx="2" fill="#1f5fbf" stroke="#fff" stroke-width="1.5"/><path d="M9,4 m-1.6,0 a1.6,1.6 0 1,0 3.2,0 a1.6,1.6 0 1,0 -3.2,0 M9,7 L8,11 L6,15 M8,11 L11,15 M8.6,8.5 L11.5,10" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round"/></g>
+              <rect x="240" y="36" width="2" height="6" fill="#8a9099"/>
+              <g class="cw-car"><use href="#bendi" transform="translate(0,130) scale(1.6)"/></g>
+              <g class="cw-car2"><use href="#carTop" transform="translate(0,90) scale(1.6) rotate(180)" style="--car:#e8e8e8"/></g>
+              <!-- The pedestrian, seen from above -->
+              <g class="walker">
+                <ellipse cx="0" cy="0" rx="10" ry="6.5" fill="#e5483b"/>
+                <circle class="walker-head" cx="0" cy="0" r="5.5" fill="#6b4a32"/>
+              </g>
+              <g transform="translate(225,104)"><g class="pop cw-star" opacity="0"><use href="#star" transform="scale(1.4)"/></g></g>
+              <rect class="label-bg" x="10" y="188" width="262" height="24" rx="12"/>
+              <text class="label" x="22" y="204">Stop before the stripes, let them cross</text>
+            </svg>
+            <figcaption>Pedestrians look both ways first. Waiting until they reach the other side earns a star.</figcaption>
+          </figure>
+        </div>
+        <div>
+          <span class="badge">PRD-004</span>
+          <h3>Pedestrian crossings</h3>
+          <p class="goal">Add people walking around town, and teach players to stop and let pedestrians cross at crosswalks.</p>
+          <ul class="gets">
+            <li>Zebra crosswalks, including one in the school zone.</li>
+            <li>Kids, adults, and an older person who walk and cross the street.</li>
+            <li>A star for stopping and letting them cross.</li>
+            <li>Nobody can ever be hit: pedestrians step back and the car slows down.</li>
+          </ul>
+          <details>
+            <summary>All 8 requirements</summary>
+            <ol>
+              <li>At least 4 zebra crosswalks with crosswalk signs: at least 2 in the middle of a block, and 1 in the school zone.</li>
+              <li>Pedestrians walk along the sidewalks, and someone crosses each crosswalk every 20 to 40 seconds.</li>
+              <li>Pedestrians wait at the curb, look both ways, and never step out in front of a car that is too close to stop.</li>
+              <li>Stopping before the crosswalk until the pedestrian reaches the other side earns a star. Driving onto it while someone is on it gets a tip.</li>
+              <li>Each crosswalk gives a player a star at most once a minute.</li>
+              <li>Pedestrians can never be hit. If a car gets too close, they step back to the curb and the car is gently slowed. There are no crashes or injuries.</li>
+              <li>Kids, adults, and an older person walking slowly, each looking different.</li>
+              <li>The first time a player meets a waiting pedestrian, Bendi explains the rule.</li>
+            </ol>
+          </details>
+          <a class="prd-link" href="https://github.com/dimastatz/bendi-go/blob/main/specs/prd-004-pedestrian-crossings.md">Read the full PRD →</a>
+        </div>
+      </article>
+
+      <!-- PRD-005 -->
+      <article class="chapter reveal" id="prd-005">
+        <div class="scenes">
+          <figure class="scene" style="margin:0">
+            <svg viewBox="0 0 400 240" role="img" aria-label="Cars drive counterclockwise around a roundabout. The Bendi car waits at the give-way line until a car passes, earns a star, then joins.">
+              <rect width="400" height="240" fill="#a9d18e"/>
+              <rect x="164" y="0" width="72" height="240" fill="#d8d2c4"/><rect x="0" y="84" width="400" height="72" fill="#d8d2c4"/>
+              <rect x="172" y="0" width="56" height="240" fill="#4a4f57"/><rect x="0" y="92" width="400" height="56" fill="#4a4f57"/>
+              <circle cx="200" cy="120" r="86" fill="#d8d2c4"/>
+              <circle cx="200" cy="120" r="78" fill="#4a4f57"/>
+              <circle cx="200" cy="120" r="36" fill="#d8d2c4"/>
+              <circle cx="200" cy="120" r="32" fill="#7cbf6a"/>
+              <circle cx="200" cy="120" r="10" fill="#3f8f4a"/><circle cx="190" cy="112" r="6" fill="#3f8f4a"/><circle cx="210" cy="128" r="7" fill="#3f8f4a"/>
+              <!-- Give-way lines at every entrance -->
+              <g stroke="#fff" stroke-width="3" stroke-dasharray="4 3">
+                <line x1="200" y1="201" x2="228" y2="201"/><line x1="172" y1="39" x2="200" y2="39"/>
+                <line x1="119" y1="120" x2="119" y2="148"/><line x1="281" y1="92" x2="281" y2="120"/>
+              </g>
+              <!-- Give-way sign and roundabout sign by the bottom entrance -->
+              <rect x="244" y="196" width="2.5" height="24" fill="#8a9099"/>
+              <path d="M233,182 L257,182 L245,203 Z" fill="#fff" stroke="#d9302a" stroke-width="3.5" stroke-linejoin="round"/>
+              <rect x="262" y="200" width="2.5" height="22" fill="#8a9099"/>
+              <circle cx="263" cy="196" r="10" fill="#1f5fbf" stroke="#fff" stroke-width="1.5"/>
+              <path d="M258,193 a6,6 0 0 1 10,0 M268,199 a6,6 0 0 1 -10,0" stroke="#fff" stroke-width="1.6" fill="none"/>
+              <!-- NPC cars go around counterclockwise -->
+              <g>
+                <use href="#carTop" style="--car:#e8e8e8">
+                  <animateMotion dur="4s" repeatCount="indefinite" rotate="auto" path="M256,120 A56,56 0 1 0 144,120 A56,56 0 1 0 256,120"/>
+                </use>
+              </g>
+              <g>
+                <use href="#carTop" style="--car:#c8483c">
+                  <animateMotion dur="4s" begin="-0.83s" repeatCount="indefinite" rotate="auto" path="M256,120 A56,56 0 1 0 144,120 A56,56 0 1 0 256,120"/>
+                </use>
+              </g>
+              <!-- Bendi waits for the cars in the roundabout, then joins and leaves at the top -->
+              <use href="#bendi">
+                <animateMotion dur="8s" repeatCount="indefinite" rotate="auto" calcMode="linear"
+                  keyPoints="0;0.153;0.153;1" keyTimes="0;0.25;0.6;1"
+                  path="M214,262 L214,196 Q214,178 228,168.5 A56,56 0 0 0 228,71.5 Q214,62 214,44 L214,-22"/>
+              </use>
+              <g transform="translate(244,222)" opacity="0">
+                <animate attributeName="opacity" dur="8s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.44;0.47;0.58;0.62;1"/>
+                <use href="#star" transform="scale(1.3)"/>
+              </g>
+              <rect class="label-bg" x="10" y="10" width="208" height="24" rx="12"/>
+              <text class="label" x="22" y="26">Cars in the roundabout go first</text>
+            </svg>
+            <figcaption>Cars go around counterclockwise. Bendi gives way at the line, then joins.</figcaption>
+          </figure>
+        </div>
+        <div>
+          <span class="badge">PRD-005</span>
+          <h3>Roundabouts and yielding</h3>
+          <p class="goal">Add other cars to the road, and teach players who goes first: at roundabouts, at stop signs, and at give-way signs.</p>
+          <ul class="gets">
+            <li>Other cars drive around town and follow the same rules.</li>
+            <li>A roundabout with Israeli signs, where cars already inside go first.</li>
+            <li>A stop sign that needs a full stop, and a give-way sign.</li>
+            <li>A star for every time you give way the right way.</li>
+          </ul>
+          <details>
+            <summary>All 11 requirements</summary>
+            <h4>Other cars</h4>
+            <ol>
+              <li>NPC cars drive fixed routes and follow the same rules the player learns: red lights, pedestrians, speed limits, and the roundabout.</li>
+              <li>They keep a safe distance and slow down for the player. If a player blocks one, it waits instead of pushing.</li>
+              <li>About 6 to 10 NPC cars drive at once, so the roundabout often has cars in it.</li>
+            </ol>
+            <h4>Roundabout</h4>
+            <ol start="4">
+              <li>A single-lane roundabout with 4 entrances, in the space saved in PRD-001.</li>
+              <li>Each entrance has an Israeli roundabout sign, a give-way sign, and a painted give-way line.</li>
+              <li>Cars drive around it counterclockwise.</li>
+              <li>Waiting behind the line for a car already in the roundabout earns a star, and so does entering without stopping when it's clear. Making a car in the roundabout slow down gets a tip.</li>
+            </ol>
+            <h4>Stop and give-way signs</h4>
+            <ol start="8">
+              <li>One crossing has stop signs on its side street. A full stop before the line earns a star, and rolling through gets a tip.</li>
+              <li>Another crossing has give-way signs. Letting cars on the main street pass first earns a star.</li>
+              <li>Each entrance or sign gives a player a star at most once a minute.</li>
+            </ol>
+            <h4>Tips</h4>
+            <ol start="11">
+              <li>The first time a player reaches a roundabout, a stop sign, or a give-way sign, Bendi explains the rule.</li>
+            </ol>
+          </details>
+          <a class="prd-link" href="https://github.com/dimastatz/bendi-go/blob/main/specs/prd-005-roundabouts-and-yielding.md">Read the full PRD →</a>
+        </div>
+      </article>
+
+      <!-- PRD-006 -->
+      <article class="chapter reveal" id="prd-006">
+        <div class="scenes">
+          <figure class="scene" style="margin:0">
+            <svg viewBox="0 0 400 220" role="img" aria-label="A lesson route is drawn on the mini-map, checkpoints light up, three stars are earned, and a Bendi Go driving license card appears.">
+              <rect width="400" height="220" fill="var(--surface-2)"/>
+              <!-- Mini-map -->
+              <rect x="20" y="20" width="190" height="180" rx="14" fill="#1b2027"/>
+              <g stroke="#3a424d" stroke-width="10" stroke-linecap="round">
+                <line x1="40" y1="40" x2="190" y2="40"/><line x1="40" y1="100" x2="190" y2="100"/><line x1="40" y1="180" x2="190" y2="180"/>
+                <line x1="60" y1="40" x2="60" y2="180"/><line x1="120" y1="40" x2="120" y2="180"/><line x1="180" y1="40" x2="180" y2="180"/>
+              </g>
+              <path class="route" d="M40,180 H120 V100 H180 V40" fill="none" stroke="#3a96e8" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle class="cp cp1" cx="120" cy="180" r="7" fill="#fff" stroke="#1b2027" stroke-width="2"/>
+              <circle class="cp cp2" cx="120" cy="100" r="7" fill="#fff" stroke="#1b2027" stroke-width="2"/>
+              <circle class="cp cp3" cx="180" cy="100" r="7" fill="#fff" stroke="#1b2027" stroke-width="2"/>
+              <circle class="cp cp4" cx="180" cy="40" r="8" fill="#fff" stroke="#1b2027" stroke-width="2"/>
+              <!-- Stars earned in this lesson -->
+              <g transform="translate(250,40)">
+                <use class="ls1" href="#star" transform="translate(0,0) scale(1.5)"/>
+                <use class="ls2" href="#star" transform="translate(40,0) scale(1.5)"/>
+                <use class="ls3" href="#star" transform="translate(80,0) scale(1.5)"/>
+              </g>
+              <text class="svg-text passed" x="290" y="84" text-anchor="middle" font-size="17" font-weight="700" fill="#2fa66a" opacity="0">Lesson passed!</text>
+              <!-- The license card -->
+              <g class="license" opacity="0">
+                <rect x="0" y="70" width="160" height="100" rx="10" fill="#f6d3dc" stroke="#d58a9c" stroke-width="2"/>
+                <rect x="0" y="70" width="160" height="22" rx="10" fill="#c2405c"/>
+                <rect x="0" y="82" width="160" height="10" fill="#c2405c"/>
+                <text class="svg-text" x="80" y="86" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">BENDI GO · DRIVING LICENSE</text>
+                <rect x="12" y="102" width="40" height="50" rx="5" fill="#fff" stroke="#d58a9c"/>
+                <circle cx="32" cy="120" r="9" fill="#f2c9a0"/><path d="M18,150 Q32,128 46,150 Z" fill="#3a96e8"/>
+                <g fill="#c2405c" opacity=".55"><rect x="62" y="106" width="80" height="6" rx="3"/><rect x="62" y="120" width="60" height="6" rx="3"/><rect x="62" y="134" width="70" height="6" rx="3"/></g>
+                <g transform="translate(140,154)"><use href="#star"/></g>
+              </g>
+            </svg>
+            <figcaption>Follow the route, earn 3 stars to pass, and finish with your own driving license.</figcaption>
+          </figure>
+        </div>
+        <div>
+          <span class="badge">PRD-006</span>
+          <h3>Driving lessons and license</h3>
+          <p class="goal">Turn free driving into a journey: short guided lessons that teach one rule at a time, saved progress, and a final test that earns a Bendi Go driving license.</p>
+          <ul class="gets">
+            <li>Five short lessons, one for each rule, with arrows on the road and a mini-map.</li>
+            <li>Earn 3 stars to pass a lesson and open the next one.</li>
+            <li>A driving test, a license card with your name and avatar, and a badge on your car.</li>
+            <li>Stars, lessons, and the license are saved between visits.</li>
+          </ul>
+          <details>
+            <summary>All 11 requirements</summary>
+            <h4>Lessons</h4>
+            <ol>
+              <li>One lesson for each rule: driving basics, traffic lights, speed limits, crosswalks, and roundabouts with stop and give-way signs.</li>
+              <li>Each lesson is a 2 to 4 minute route, with arrows on the road, a mini-map, and Bendi explaining the rule.</li>
+              <li>Earning at least 3 stars passes a lesson. Players can retry as often as they want.</li>
+              <li>Lesson 1 starts on a player's first visit, each lesson unlocks the next, and free driving is always available.</li>
+              <li>A lesson menu shows every lesson, whether it's locked or passed, and the best star count.</li>
+            </ol>
+            <h4>Driving test and license</h4>
+            <ol start="6">
+              <li>Passing all 5 lessons unlocks the driving test: one longer route with every rule.</li>
+              <li>The test is passed by following every rule on it. Tips still show, so a failed test teaches something.</li>
+              <li>Passing shows a celebration and a Bendi Go driving license card with the player's Roblox name, avatar, and the date, styled after the Israeli license.</li>
+              <li>The player's car gets a "Licensed driver" badge that other players can see.</li>
+            </ol>
+            <h4>Saved progress</h4>
+            <ol start="10">
+              <li>Stars, passed lessons, best star counts, and the license are saved with Roblox DataStores.</li>
+              <li>If saving or loading fails, the player keeps playing, the game retries later, and progress is never reset by a failed load.</li>
+            </ol>
+          </details>
+          <a class="prd-link" href="https://github.com/dimastatz/bendi-go/blob/main/specs/prd-006-driving-lessons-and-license.md">Read the full PRD →</a>
+        </div>
+      </article>
+
+      <!-- PRD-007 -->
+      <article class="chapter reveal" id="prd-007">
+        <div class="scenes">
+          <figure class="scene" style="margin:0">
+            <svg viewBox="0 0 400 220" role="img" aria-label="A street goes from day to sunset to night and sunrise. At night the street lamps, the windows, and the car's headlights light up.">
+              <rect class="sky" width="400" height="172" fill="#a8dcff"/>
+              <g class="night" opacity="0" fill="#fff">
+                <circle cx="40" cy="20" r="1.2"/><circle cx="90" cy="44" r="1"/><circle cx="150" cy="18" r="1.4"/><circle cx="230" cy="30" r="1"/>
+                <circle cx="300" cy="14" r="1.3"/><circle cx="360" cy="40" r="1"/><circle cx="190" cy="56" r=".9"/><circle cx="270" cy="60" r="1"/>
+              </g>
+              <circle class="sun" cx="0" cy="0" r="15" fill="#ffd75e"/>
+              <g class="moon" opacity="0"><circle cx="0" cy="0" r="11" fill="#f2f0e6"/><circle cx="5" cy="-3" r="9" fill="#141a3a"/></g>
+              <!-- Buildings with windows -->
+              <g fill="#e9dcc4" stroke="#c9b99a">
+                <rect x="10" y="78" width="80" height="94"/><rect x="100" y="104" width="60" height="68"/>
+                <rect x="232" y="64" width="78" height="108"/><rect x="320" y="96" width="70" height="76"/>
+              </g>
+              <g fill="#3b4b5c">
+                <rect x="22" y="90" width="12" height="12"/><rect x="44" y="90" width="12" height="12"/><rect x="66" y="90" width="12" height="12"/>
+                <rect x="22" y="116" width="12" height="12"/><rect x="44" y="116" width="12" height="12"/><rect x="66" y="116" width="12" height="12"/>
+                <rect x="22" y="142" width="12" height="12"/><rect x="66" y="142" width="12" height="12"/>
+                <rect x="112" y="116" width="12" height="12"/><rect x="136" y="116" width="12" height="12"/><rect x="112" y="142" width="12" height="12"/>
+                <rect x="244" y="76" width="12" height="12"/><rect x="266" y="76" width="12" height="12"/><rect x="288" y="76" width="12" height="12"/>
+                <rect x="244" y="102" width="12" height="12"/><rect x="266" y="102" width="12" height="12"/><rect x="288" y="102" width="12" height="12"/>
+                <rect x="244" y="128" width="12" height="12"/><rect x="288" y="128" width="12" height="12"/>
+                <rect x="332" y="108" width="12" height="12"/><rect x="356" y="108" width="12" height="12"/><rect x="332" y="134" width="12" height="12"/>
+              </g>
+              <g fill="#7d8a96"><rect x="16" y="72" width="22" height="6"/><rect x="240" y="58" width="22" height="6"/></g>
+              <rect class="dark" width="400" height="172" fill="#0a1030" opacity="0"/>
+              <g class="night" opacity="0" fill="#ffd98a">
+                <rect x="44" y="90" width="12" height="12"/><rect x="22" y="116" width="12" height="12"/><rect x="66" y="142" width="12" height="12"/>
+                <rect x="136" y="116" width="12" height="12"/><rect x="266" y="76" width="12" height="12"/><rect x="244" y="102" width="12" height="12"/>
+                <rect x="288" y="128" width="12" height="12"/><rect x="356" y="108" width="12" height="12"/>
+              </g>
+              <!-- Sidewalk, lamps, and road -->
+              <rect y="166" width="400" height="10" fill="#cfc8b8"/>
+              <g>
+                <rect x="183" y="96" width="4" height="74" fill="#5b636d"/><rect x="183" y="96" width="22" height="4" fill="#5b636d"/>
+                <rect x="198" y="96" width="14" height="6" rx="2" fill="#5b636d"/>
+              </g>
+              <g class="night" opacity="0">
+                <polygon points="200,102 210,102 236,200 174,200" fill="url(#lampCone)"/>
+                <rect x="199" y="101" width="12" height="3" rx="1.5" fill="#fff3c4"/>
+              </g>
+              <rect y="176" width="400" height="44" fill="#3d424a"/>
+              <line x1="0" y1="198" x2="400" y2="198" stroke="#fff" stroke-width="2" stroke-dasharray="12 12"/>
+              <g class="dn-car">
+                <g transform="translate(0,203) scale(.8)">
+                  <polygon class="night" opacity="0" points="46,-12 150,-30 150,14" fill="url(#beam)"/>
+                  <use href="#carSide" style="--car:#3a96e8"/>
+                  <circle cx="34" cy="-25" r="5" fill="#fff"/><circle cx="36" cy="-25" r="2.3" fill="#17202b"/>
+                </g>
+              </g>
+              <rect class="label-bg" x="10" y="10" width="92" height="24" rx="12"/>
+              <g class="label">
+                <text class="dn-s1" x="22" y="26">☀ Day</text>
+                <text class="dn-s2" x="22" y="26" opacity="0">Sunset</text>
+                <text class="dn-s3" x="22" y="26" opacity="0">☾ Night</text>
+                <text class="dn-s4" x="22" y="26" opacity="0">Sunrise</text>
+              </g>
+            </svg>
+            <figcaption>A 20-minute day. At night the street lamps, windows, and headlights come on.</figcaption>
+          </figure>
+          <figure class="scene" style="margin:0">
+            <svg viewBox="0 0 400 220" role="img" aria-label="The inside view from the driver's seat on the left: the road through the windshield, a speedometer, a steering wheel with hands that turns, a clock screen, and the driving instructor in the passenger seat.">
+              <rect width="400" height="130" fill="#a8dcff"/>
+              <rect y="110" width="400" height="110" fill="#a9d18e"/>
+              <g class="road-view">
+                <polygon points="186,110 214,110 360,220 40,220" fill="#4a4f57"/>
+                <line class="dash-line" x1="200" y1="110" x2="200" y2="220" stroke="#fff" stroke-width="3"/>
+              </g>
+              <rect x="40" y="86" width="26" height="26" fill="#e9dcc4"/><rect x="300" y="78" width="40" height="34" fill="#e9dcc4"/>
+              <circle cx="80" cy="100" r="10" fill="#3f8f4a"/><circle cx="350" cy="96" r="9" fill="#3f8f4a"/>
+              <!-- The car's frame -->
+              <rect width="400" height="16" fill="#2a2d33"/>
+              <polygon points="0,0 34,0 8,150 0,150" fill="#2a2d33"/>
+              <polygon points="400,0 366,0 392,150 400,150" fill="#2a2d33"/>
+              <rect x="172" y="14" width="56" height="16" rx="6" fill="#2a2d33"/><rect x="176" y="17" width="48" height="10" rx="4" fill="#7fa4c2"/>
+              <!-- The instructor, in the passenger seat on the right -->
+              <rect x="300" y="110" width="80" height="110" rx="18" fill="#3a3e45"/>
+              <path d="M298,220 Q300,150 340,146 Q380,150 384,220 Z" fill="#2f6fb5"/>
+              <rect x="350" y="168" width="18" height="9" rx="2" fill="#facd1e"/>
+              <g class="instructor-head">
+                <circle cx="338" cy="122" r="21" fill="#e2b48c"/>
+                <path d="M317,118 Q320,96 340,98 Q358,99 359,116 Q350,106 334,108 Q324,110 317,118 Z" fill="#4a3426"/>
+                <circle cx="328" cy="122" r="2.3" fill="#17202b"/><circle cx="342" cy="122" r="2.3" fill="#17202b"/>
+                <path d="M327,132 Q334,137 342,132" stroke="#8a4a3a" stroke-width="2" fill="none" stroke-linecap="round"/>
+              </g>
+              <!-- Dashboard -->
+              <path d="M0,160 Q200,138 400,160 L400,220 L0,220 Z" fill="#23262c"/>
+              <circle cx="120" cy="178" r="26" fill="#0f141b" stroke="#3a3f47" stroke-width="2"/>
+              <path d="M101,191 A24,24 0 1 1 139,191" fill="none" stroke="#5aaaf0" stroke-width="2" opacity=".7"/>
+              <line class="mini-needle" x1="120" y1="178" x2="120" y2="160" stroke="#ff5a3c" stroke-width="2.5" stroke-linecap="round"/>
+              <text class="svg-text" x="120" y="196" text-anchor="middle" font-size="7" fill="#cfd6df">km/h</text>
+              <rect x="200" y="166" width="62" height="32" rx="5" fill="#0f1a26" stroke="#3a3f47"/>
+              <text class="svg-text" x="231" y="179" text-anchor="middle" font-size="7.5" font-weight="700" fill="#5aaaf0">BENDI GO</text>
+              <text class="svg-text" x="231" y="193" text-anchor="middle" font-size="11" font-weight="700" fill="#e8eef5">14:30</text>
+              <rect x="272" y="196" width="8" height="20" rx="3" fill="#3a3f47"/><circle cx="276" cy="196" r="6" fill="#17191d"/>
+              <!-- The steering wheel turns, with the driver's hands at 10 and 2 -->
+              <g class="wheel">
+                <circle cx="120" cy="204" r="46" fill="none" stroke="#17191d" stroke-width="10"/>
+                <path d="M74,204 L106,204 M166,204 L134,204 M120,218 L120,250" stroke="#17191d" stroke-width="8"/>
+                <circle cx="120" cy="204" r="14" fill="#2a2d33"/>
+                <circle cx="120" cy="204" r="5" fill="#3a96e8"/>
+                <ellipse cx="80" cy="181" rx="8" ry="10" fill="#d9a77c" transform="rotate(-30 80 181)"/>
+                <ellipse cx="160" cy="181" rx="8" ry="10" fill="#d9a77c" transform="rotate(30 160 181)"/>
+              </g>
+              <rect class="label-bg" x="44" y="24" width="104" height="24" rx="12"/>
+              <text class="label" x="56" y="40">Inside view</text>
+            </svg>
+            <figcaption>Drive from the driver's seat on the left, with your instructor beside you.</figcaption>
+          </figure>
+        </div>
+        <div>
+          <span class="badge">PRD-007</span>
+          <h3>Realistic graphics</h3>
+          <p class="goal">Make Bendi Go look like a real town, with day and night, and let players drive from inside the car with the driving instructor next to them.</p>
+          <ul class="gets">
+            <li>Realistic light, shadows, and distant fog, and a sky that turns from day to night.</li>
+            <li>Street lamps, headlights, and lit windows after dark.</li>
+            <li>Curbs painted the Israeli way, and detailed buildings, trees, and cars.</li>
+            <li>An inside view with a dashboard, a steering wheel, and the instructor.</li>
+          </ul>
+          <details>
+            <summary>All 20 requirements</summary>
+            <h4>Light and sky</h4>
+            <ol>
+              <li>Roblox's Future lighting, with soft shadows, light fog in the distance, a soft glow around bright lights, and warmer colors.</li>
+              <li>A whole day takes 20 minutes and comes from the server clock, so everyone sees the same sky: 11 minutes of day, a 2-minute sunset, a 4-minute night, and a 3-minute sunrise.</li>
+              <li>The night is never too dark to drive.</li>
+            </ol>
+            <h4>Night lights</h4>
+            <ol start="4">
+              <li>Street lamps stand on both sides of the streets and shine on the road at night, clear of corners, crosswalks, and the roundabout.</li>
+              <li>Every moving car turns on headlights at night. NPC brake lights keep working.</li>
+              <li>At night, some windows in every building light up.</li>
+            </ol>
+            <h4>Streets</h4>
+            <ol start="7">
+              <li>Curbs are painted the Israeli way: red and white for no stopping (within 12 m of crossings, the roundabout, and crosswalks), blue and white for paid parking on the middle streets, and plain gray for free parking.</li>
+              <li>Roads, sidewalks, and curbs use realistic materials, and sign and traffic light poles are metal.</li>
+            </ol>
+            <h4>Buildings, trees, and gardens</h4>
+            <ol start="9">
+              <li>Buildings have windows with roller shutter boxes, balconies with glass railings, a stone band at the bottom, a low roof wall, and solar water heaters.</li>
+              <li>Round trees have fuller crowns, and palms have drooping fronds and dates.</li>
+              <li>Gardens have low hedges along the sidewalk, with gaps to walk through.</li>
+            </ol>
+            <h4>Cars</h4>
+            <ol start="12">
+              <li>Every car has bumpers, tinted windows with a sloped windshield, a roof, mirrors, wheels with silver rims, headlights, taillights, and a yellow Israeli license plate.</li>
+              <li>The Bendi car still looks like the mascot: blue, big eyes, and a "BENDI GO" plate.</li>
+              <li>Cars drive and bump into things exactly like before. The new parts are only for looks.</li>
+            </ol>
+            <h4>Inside view</h4>
+            <ol start="15">
+              <li>Switch between the outside and inside views with a button, the V key, or the gamepad's right stick. The game remembers the choice.</li>
+              <li>The driver sits on the left, with a glowing speedometer and speed limit sign, a clock screen that shows the game's time, air vents, a gear lever, a rear-view mirror, and a steering wheel that turns with the player's hands at 10 and 2.</li>
+              <li>The instructor sits on the right. Look around with the right mouse button, Q and E, the right stick, or a finger, and the view turns back to the road on letting go.</li>
+              <li>Other players see the instructor and the dashboard through the windows.</li>
+              <li>The player's own character is hidden in the inside view, and the windows are clearer from inside.</li>
+            </ol>
+            <h4>Performance</h4>
+            <ol start="20">
+              <li>The game still runs smoothly on phones and tablets: lights cast no shadows, and Roblox's quality setting lowers detail on slower devices.</li>
+            </ol>
+          </details>
+          <a class="prd-link" href="https://github.com/dimastatz/bendi-go/blob/main/specs/prd-007-realistic-graphics.md">Read the full PRD →</a>
+        </div>
+      </article>
+
+      <!-- PRD-008 -->
+      <article class="chapter reveal" id="prd-008">
+        <div class="scenes">
+          <figure class="scene" style="margin:0">
+            <svg viewBox="0 0 400 200" role="img" aria-label="The Bendi car slows down for a red light. Its brake lights glow red while it brakes and waits, and turn off when it drives on at green.">
+              <rect width="400" height="200" fill="#a8dcff"/>
+              <rect y="120" width="400" height="44" fill="#a9d18e"/>
+              <rect y="156" width="400" height="8" fill="#cfc8b8"/>
+              <rect y="164" width="400" height="36" fill="#3d424a"/>
+              <line x1="0" y1="190" x2="400" y2="190" stroke="#fff" stroke-width="2" stroke-dasharray="12 12"/>
+              <rect x="300" y="160" width="5" height="4" fill="#fff"/>
+              <!-- Traffic light -->
+              <rect x="318" y="70" width="5" height="90" fill="#8a9099"/>
+              <rect x="304" y="22" width="32" height="84" rx="7" fill="#22252a"/>
+              <circle class="bl-red" cx="320" cy="40" r="9" fill="#ff3b2f"/>
+              <circle cx="320" cy="64" r="9" fill="#ffc21a" opacity=".15"/>
+              <circle class="bl-green" cx="320" cy="88" r="9" fill="#2fe07a" opacity=".15"/>
+              <!-- The car -->
+              <g class="bl-car">
+                <g transform="translate(0,172)">
+                  <use href="#carSide" style="--car:#3a96e8"/>
+                  <circle cx="34" cy="-25" r="5" fill="#fff"/><circle cx="36" cy="-25" r="2.3" fill="#17202b"/>
+                  <rect x="-48" y="-17" width="4" height="7" rx="1" fill="#7a1a1a"/>
+                  <g class="brake" opacity="0">
+                    <circle cx="-48" cy="-13" r="16" fill="url(#redGlow)"/>
+                    <rect x="-48" y="-17" width="4" height="7" rx="1" fill="#ff3b2f"/>
+                  </g>
+                </g>
+              </g>
+              <rect class="label-bg" x="10" y="10" width="190" height="24" rx="12"/>
+              <g class="label">
+                <text class="bl-s1" x="22" y="26">Driving: lights off</text>
+                <text class="bl-s2" x="22" y="26" opacity="0">Braking: lights on</text>
+                <text class="bl-s3" x="22" y="26" opacity="0">Waiting: lights stay on</text>
+                <text class="bl-s4" x="22" y="26" opacity="0">Green, driving on: off</text>
+              </g>
+            </svg>
+            <figcaption>Brake lights tell the drivers behind you that you're slowing down.</figcaption>
+          </figure>
+        </div>
+        <div>
+          <span class="badge">PRD-008</span>
+          <h3>Brake lights</h3>
+          <p class="goal">The Bendi car's taillights light up red when the player slows down or stops, just like a real car and like the NPC cars.</p>
+          <ul class="gets">
+            <li>Bright red brake lights whenever you brake.</li>
+            <li>They stay on while you wait at a red light or a crosswalk.</li>
+            <li>You can see when other players' cars brake, too.</li>
+          </ul>
+          <details>
+            <summary>All 5 requirements</summary>
+            <ol>
+              <li>Both taillights turn bright red while the car brakes: Space, the brake pedal, the gamepad, pressing back while still rolling forward, braking in reverse, or the game slowing the car for a pedestrian.</li>
+              <li>They stay on while the car stands still with a driver in it, like holding the brake pedal at a red light.</li>
+              <li>They stay off while speeding up, driving along, rolling with no pedal pressed, or reversing, and go off soon after the player stops braking.</li>
+              <li>A Bendi car with no driver never has its brake lights on.</li>
+              <li>Every player sees the same lights. Each player's game works them out from how the car moves, with no extra network messages and no flicker.</li>
+            </ol>
+          </details>
+          <a class="prd-link" href="https://github.com/dimastatz/bendi-go/blob/main/specs/prd-008-brake-lights.md">Read the full PRD →</a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section style="background:var(--surface-2)">
+    <div class="wrap reveal">
+      <p class="eyebrow">Rules for every milestone</p>
+      <h2>What never changes</h2>
+      <p class="lead">These five rules apply to every part of the game.</p>
+      <div class="rules">
+        <div class="rule"><div class="icon">🇮🇱</div><h3>Israeli rules, correctly</h3><p>Cars drive on the right, speeds are in km/h, and signs, markings, and lights look and work like in Israel.</p></div>
+        <div class="rule"><div class="icon">💛</div><h3>Kind feedback</h3><p>The game never takes stars away. A mistake gets a short, friendly tip that explains the rule.</p></div>
+        <div class="rule"><div class="icon">🔤</div><h3>Easy to read</h3><p>All text is short, in English and Hebrew, and ready for more languages.</p></div>
+        <div class="rule"><div class="icon">🛡️</div><h3>Safe for kids</h3><p>No extra chat, no purchases, and players' cars can't bump into each other.</p></div>
+        <div class="rule"><div class="icon">🚀</div><h3>Done means published</h3><p>A milestone is done when it's on Roblox and Ben has played it and checked every point.</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    Bendi Go is open source and built by Ben &amp; Dima, a father and son. ·
+    <a href="https://github.com/dimastatz/bendi-go">Code on GitHub</a> ·
+    <a href="https://github.com/dimastatz/bendi-go/tree/main/specs">All specs</a>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var root = document.documentElement;
+    var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // SVG animations (animateMotion) ignore CSS, so pause them for people who prefer less motion.
+    if (reduced) {
+      document.querySelectorAll("svg").forEach(function (svg) {
+        if (svg.pauseAnimations) svg.pauseAnimations();
+      });
+      return;
+    }
+
+    // Fade each part in as it scrolls into view.
+    if (!("IntersectionObserver" in window)) return;
+    root.classList.add("js");
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("in");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll(".reveal").forEach(function (el) { observer.observe(el); });
+  })();
+</script>
+</body>
+</html>
