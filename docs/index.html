@@ -438,6 +438,40 @@
   @keyframes blS3 { 0%, 27.9% { opacity: 0; } 28%, 57.9% { opacity: 1; } 58%, 100% { opacity: 0; } }
   @keyframes blS4 { 0%, 57.9% { opacity: 0; } 58%, 100% { opacity: 1; } }
 
+  .badge.planned { background: transparent; color: var(--blue-ink); border: 1.5px dashed var(--blue); margin-left: 6px; }
+
+  /* 9: levels and goals, 14s */
+  .p9-fill, .p9-level { transform-box: fill-box; transform-origin: left center; }
+  .p9-fill { animation: p9fill 14s infinite linear; }
+  @keyframes p9fill { 0% { transform: scaleX(0); } 34%, 49% { transform: scaleX(1); } 49.5%, 50% { transform: scaleX(0); } 82%, 100% { transform: scaleX(1); } }
+  .p9-car { animation: p9car 14s infinite linear; }
+  @keyframes p9car { 0% { transform: translateX(0); } 34%, 49% { transform: translateX(320px); } 49.5%, 50% { transform: translateX(0); } 82%, 100% { transform: translateX(320px); } }
+  .p9-c0 { animation: p9c0 14s infinite; } .p9-c1 { animation: p9c1 14s infinite; }
+  .p9-c2 { animation: p9c2 14s infinite; } .p9-c3 { animation: p9c3 14s infinite; }
+  @keyframes p9c0 { 0%, 7.9% { opacity: 1; } 8%, 47.9% { opacity: 0; } 48%, 55.9% { opacity: 1; } 56%, 100% { opacity: 0; } }
+  @keyframes p9c1 { 0%, 7.9% { opacity: 0; } 8%, 19.9% { opacity: 1; } 20%, 55.9% { opacity: 0; } 56%, 63.9% { opacity: 1; } 64%, 100% { opacity: 0; } }
+  @keyframes p9c2 { 0%, 19.9% { opacity: 0; } 20%, 47.9% { opacity: 1; } 48%, 63.9% { opacity: 0; } 64%, 71.9% { opacity: 1; } 72%, 100% { opacity: 0; } }
+  @keyframes p9c3 { 0%, 71.9% { opacity: 0; } 72%, 99.9% { opacity: 1; } 100% { opacity: 0; } }
+  .p9-d1 { animation: p9d1 14s infinite; } .p9-d2 { animation: p9d2 14s infinite; } .p9-d3 { animation: p9d3 14s infinite; }
+  @keyframes p9d1 { 0%, 7.9% { opacity: 0; } 8%, 47.9% { opacity: 1; } 48%, 55.9% { opacity: 0; } 56%, 99.9% { opacity: 1; } 100% { opacity: 0; } }
+  @keyframes p9d2 { 0%, 19.9% { opacity: 0; } 20%, 47.9% { opacity: 1; } 48%, 63.9% { opacity: 0; } 64%, 99.9% { opacity: 1; } 100% { opacity: 0; } }
+  @keyframes p9d3 { 0%, 71.9% { opacity: 0; } 72%, 99.9% { opacity: 1; } 100% { opacity: 0; } }
+  .p9-card1 { animation: p9card1 14s infinite; } .p9-card2 { animation: p9card2 14s infinite; }
+  @keyframes p9card1 { 0%, 34.9% { opacity: 0; transform: translateY(12px); } 37%, 47% { opacity: 1; transform: none; } 48.5%, 100% { opacity: 0; transform: none; } }
+  @keyframes p9card2 { 0%, 82.9% { opacity: 0; transform: translateY(12px); } 85%, 98.5% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
+  .p9-level { animation: p9level 14s infinite; }
+  @keyframes p9level { 0%, 86% { transform: scaleX(.6); } 90%, 91.9% { transform: scaleX(1); } 92%, 99.9% { transform: scaleX(.06); } 100% { transform: scaleX(.6); } }
+  .p9-l3 { animation: p9l3 14s infinite; } .p9-l4 { animation: p9l4 14s infinite; }
+  @keyframes p9l3 { 0%, 91.9% { opacity: 1; } 92%, 99.9% { opacity: 0; } 100% { opacity: 1; } }
+  @keyframes p9l4 { 0%, 91.9% { opacity: 0; } 92%, 99.9% { opacity: 1; } 100% { opacity: 0; } }
+  .p9-up { animation: p9up 14s infinite; }
+  @keyframes p9up {
+    0%, 91.9% { opacity: 0; transform: scale(.4); }
+    94% { opacity: 1; transform: scale(1.2); }
+    96%, 99% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
     html { scroll-behavior: auto; }
@@ -500,8 +534,8 @@
     <p class="tag">An open-source Roblox game where kids learn Israeli traffic rules by driving, and earn a star for every rule they follow.</p>
     <p class="he">לומדים חוקי תנועה בנהיגה</p>
     <ul class="stats">
-      <li><b>8</b>milestones</li>
-      <li><b>86</b>requirements</li>
+      <li><b>9</b>milestones</li>
+      <li><b>106</b>requirements</li>
       <li><b>5</b>rules to learn</li>
       <li><b>2</b>languages: English and Hebrew</li>
     </ul>
@@ -543,7 +577,7 @@
       <div class="reveal">
         <p class="eyebrow">Milestones</p>
         <h2>The game, one milestone at a time</h2>
-        <p class="lead">Each milestone adds one thing to learn and ends with a version kids can play. Here is every requirement, grouped by milestone, with a picture of what it looks like in the game.</p>
+        <p class="lead">Each milestone adds one thing to learn and ends with a version kids can play. Here is every requirement, grouped by milestone, with a picture of what it looks like in the game. Milestones marked Planned are written but not built yet.</p>
         <ol class="timeline">
           <li><a href="#prd-001"><b>1</b>Drive around town</a></li>
           <li><a href="#prd-002"><b>2</b>Traffic lights</a></li>
@@ -553,6 +587,7 @@
           <li><a href="#prd-006"><b>6</b>Lessons and license</a></li>
           <li><a href="#prd-007"><b>7</b>Realistic graphics</a></li>
           <li><a href="#prd-008"><b>8</b>Brake lights</a></li>
+          <li><a href="#prd-009"><b>9</b>Levels and goals</a></li>
         </ol>
       </div>
 
@@ -1231,6 +1266,127 @@
             </ol>
           </details>
           <a class="prd-link" href="https://github.com/dimastatz/bendi-go/blob/main/specs/prd-008-brake-lights.md">Read the full PRD →</a>
+        </div>
+      </article>
+
+      <!-- PRD-009 -->
+      <article class="chapter reveal" id="prd-009">
+        <div class="scenes">
+          <figure class="scene" style="margin:0">
+            <svg viewBox="0 0 400 230" role="img" aria-label="A session's goal is to stop at 3 red lights. The progress bar fills as the car drives. The first try ends with 'Almost! 2 of 3' and a Try again button. The second try reaches 3 of 3, earns a gold medal, and the level bar fills up to Level 4.">
+              <rect width="400" height="230" fill="var(--surface-2)"/>
+              <!-- The goal -->
+              <rect x="20" y="12" width="360" height="34" rx="17" fill="#1b2027"/>
+              <circle cx="40" cy="29" r="9" fill="#e5483b"/><circle cx="40" cy="29" r="6" fill="#fff"/><circle cx="40" cy="29" r="3" fill="#e5483b"/>
+              <text class="svg-text" x="56" y="34" font-size="14" font-weight="700" fill="#fff">Goal: stop at 3 red lights</text>
+              <!-- Route progress, with a mark at each checkpoint and the finish -->
+              <rect x="40" y="76" width="320" height="12" rx="6" fill="#cfd8e3"/>
+              <rect class="p9-fill" x="40" y="76" width="320" height="12" rx="6" fill="#3a96e8"/>
+              <g fill="#fff" stroke="#1b2027" stroke-width="1.5">
+                <circle cx="120" cy="82" r="4"/><circle cx="200" cy="82" r="4"/><circle cx="280" cy="82" r="4"/>
+              </g>
+              <g transform="translate(356,58)">
+                <rect x="0" y="0" width="2" height="26" fill="#5b636d"/>
+                <rect x="2" y="0" width="14" height="10" fill="#fff" stroke="#1b2027" stroke-width=".8"/>
+                <rect x="2" y="0" width="3.5" height="5" fill="#1b2027"/><rect x="9" y="0" width="3.5" height="5" fill="#1b2027"/>
+                <rect x="5.5" y="5" width="3.5" height="5" fill="#1b2027"/><rect x="12.5" y="5" width="3.5" height="5" fill="#1b2027"/>
+              </g>
+              <g class="p9-car"><use href="#bendi" transform="translate(40,64) scale(.95)"/></g>
+              <!-- The goal counter -->
+              <text class="svg-text" x="40" y="124" font-size="13" fill="var(--muted)">Red lights stopped at</text>
+              <g class="svg-text" font-size="24" font-weight="800" fill="var(--text)">
+                <text class="p9-c0" x="40" y="154">0 of 3</text>
+                <text class="p9-c1" x="40" y="154" opacity="0">1 of 3</text>
+                <text class="p9-c2" x="40" y="154" opacity="0">2 of 3</text>
+                <text class="p9-c3" x="40" y="154" opacity="0">3 of 3</text>
+              </g>
+              <g fill="#cfd8e3"><circle cx="134" cy="146" r="7"/><circle cx="154" cy="146" r="7"/><circle cx="174" cy="146" r="7"/></g>
+              <g fill="#2fa66a">
+                <circle class="p9-d1" cx="134" cy="146" r="7" opacity="0"/>
+                <circle class="p9-d2" cx="154" cy="146" r="7" opacity="0"/>
+                <circle class="p9-d3" cx="174" cy="146" r="7" opacity="0"/>
+              </g>
+              <!-- The level -->
+              <g class="svg-text" font-size="14" font-weight="700" fill="var(--text)">
+                <text class="p9-l3" x="40" y="205">Level 3</text>
+                <text class="p9-l4" x="40" y="205" opacity="0">Level 4</text>
+              </g>
+              <rect x="110" y="195" width="250" height="12" rx="6" fill="#cfd8e3"/>
+              <rect class="p9-level" x="110" y="195" width="250" height="12" rx="6" fill="#ffc83d"/>
+              <!-- First try: not yet -->
+              <g class="p9-card1" opacity="0">
+                <rect x="200" y="104" width="180" height="78" rx="14" fill="var(--surface)" stroke="var(--line)" stroke-width="1.5"/>
+                <text class="svg-text" x="216" y="128" font-size="16" font-weight="800" fill="var(--text)">Almost!</text>
+                <text class="svg-text" x="216" y="146" font-size="11.5" fill="var(--muted)">2 of 3 red lights. So close!</text>
+                <rect x="216" y="154" width="84" height="20" rx="10" fill="#3a96e8"/>
+                <text class="svg-text" x="258" y="168" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">Try again</text>
+              </g>
+              <!-- Second try: passed with a gold medal -->
+              <g class="p9-card2" opacity="0">
+                <rect x="200" y="104" width="180" height="78" rx="14" fill="var(--surface)" stroke="var(--line)" stroke-width="1.5"/>
+                <path d="M226,116 L232,132 L238,116 Z M238,116 L244,132 L250,116 Z" fill="#3a96e8"/>
+                <circle cx="238" cy="146" r="16" fill="#ffc83d" stroke="#c98a00" stroke-width="2"/>
+                <use href="#star" transform="translate(238,146) scale(.8)"/>
+                <text class="svg-text" x="264" y="140" font-size="15" font-weight="800" fill="var(--text)">Gold medal!</text>
+                <text class="svg-text" x="264" y="158" font-size="11.5" fill="var(--muted)">Every rule followed.</text>
+              </g>
+              <g transform="translate(300,178)"><g class="pop p9-up" opacity="0">
+                <rect x="-46" y="-14" width="92" height="26" rx="13" fill="#2fa66a"/>
+                <text class="svg-text" x="0" y="4" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">Level up!</text>
+              </g></g>
+            </svg>
+            <figcaption>Not yet? Try again right away. Pass every session in a level to move up.</figcaption>
+          </figure>
+        </div>
+        <div>
+          <span class="badge">PRD-009</span><span class="badge planned">Planned</span>
+          <h3>Levels and goals</h3>
+          <p class="goal">Make every drive a small mission: one clear goal, progress you can see while you drive, a result at the finish line, and levels from your first lesson to Expert driver.</p>
+          <ul class="gets">
+            <li>Every drive starts with one clear goal, like "Stop at 3 red lights".</li>
+            <li>A progress panel shows your goal counter and how much of the route is left.</li>
+            <li>Finish with a bronze, silver, or gold medal, or "Not yet" and a tip on what to practise.</li>
+            <li>Seven levels, from Learner to Expert, with busy streets, night driving, and no arrows.</li>
+          </ul>
+          <details>
+            <summary>All 20 requirements</summary>
+            <h4>Every session has a goal</h4>
+            <ol>
+              <li>A driving session is one drive from a start to a finish line: a lesson, the driving test, or a new mission. Free driving stays open at any time.</li>
+              <li>Before a session, a goal card shows the goal in a few words, the route on the mini-map, and what passing needs. A new player sees lesson 1's goal card right away.</li>
+              <li>Each session has one goal: earn a number of stars, follow one rule a number of times, follow every rule on the route, or reach the finish line. Sessions are plain data, so new ones need no new code.</li>
+            </ol>
+            <h4>Visible progress</h4>
+            <ol start="4">
+              <li>A progress panel at the top shows the goal, a counter like "2 of 3", and a route bar with a mark for each checkpoint, updating the moment anything is reached, without covering the controls.</li>
+              <li>Arrows on the road and the mini-map show the way, except in Expert sessions.</li>
+            </ol>
+            <h4>Finishing a session</h4>
+            <ol start="6">
+              <li>A session ends at the finish line. A mistake never ends it early: Bendi gives a tip and the player keeps driving.</li>
+              <li>The result card shows a bronze medal (goal met), silver (goal met, at most one rule missed), or gold (every rule followed), or "Not yet" with what went well and one or two rules to practise. The game never says "failed".</li>
+              <li>Try again restarts the session at once. Any open session can be replayed as often as the player likes, to improve its best medal.</li>
+              <li>The player can stop a session at any time, and stopping counts as nothing, good or bad.</li>
+              <li>No time limits, and nothing rewards driving fast.</li>
+            </ol>
+            <h4>Levels</h4>
+            <ol start="11">
+              <li>Passing every session in a level opens the next one, with a "Level up!" celebration.</li>
+              <li>Seven levels: Learner (lessons 1–2), Road user (lessons 3–4), Test day (lesson 5 and the driving test), Licensed driver (mixed-rule missions), Busy town (more traffic), Night driver, and Expert. Levels 4 to 7 have at least 2 missions each.</li>
+              <li>In a night mission, that player's own sky is night for the session, the only exception to everyone sharing one sky.</li>
+              <li>In an Expert mission there are no arrows, and the instructor says where to turn a few seconds before each crossing.</li>
+              <li>The level badge and its progress bar show in the Levels menu and on the result card, and other players see the level next to the license badge.</li>
+              <li>The Lessons menu becomes a Levels menu, with every session's state and best medal.</li>
+              <li>Players never go down a level and never lose stars, medals, or the license.</li>
+            </ol>
+            <h4>Saving</h4>
+            <ol start="18">
+              <li>Passed sessions and best medals are saved. The level is worked out from them, never saved on its own.</li>
+              <li>Players who already passed lessons or have a license start on the matching level.</li>
+              <li>All new text is in English and Hebrew.</li>
+            </ol>
+          </details>
+          <a class="prd-link" href="https://github.com/dimastatz/bendi-go/blob/main/specs/prd-009-levels-and-goals.md">Read the full PRD →</a>
         </div>
       </article>
     </div>

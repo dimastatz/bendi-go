@@ -52,7 +52,7 @@ CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)) runs the format check,
 
 ## Specs
 
-`specs/` holds one PRD per milestone (`prd-001-*.md` to `prd-008-*.md`), built in order. [specs/README.md](specs/README.md) lists the milestones and the rules that apply to all of them (Israeli rules done correctly, no star penalties, English and Hebrew text, kid safety, "done means published"). Read the relevant PRD before starting work on a feature.
+`specs/` holds one PRD per milestone (`prd-001-*.md` to `prd-009-*.md`), built in order. [specs/README.md](specs/README.md) lists the milestones and the rules that apply to all of them (Israeli rules done correctly, no star penalties, English and Hebrew text, kid safety, "done means published"). Read the relevant PRD before starting work on a feature.
 
 ## Architecture Principals: functional core, imperative shell
 - **Game/meta state** (player data, inventory, economy, round/match state, UI state)

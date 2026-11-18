@@ -7,6 +7,9 @@
 <kbd>
 <img src="docs/images/bendi-go-car.png" alt="Bendi Go car" width="256px">
 </kbd>
+</br>
+</br>
+<a href="https://dimastatz.github.io/bendi-go/docs/"><b>▶ See the whole game on one animated page</b></a>
 </div>
 
 ## About The Project
@@ -14,7 +17,7 @@
 ### Bendi Go
 Bendi Go is an open-source Roblox game that teaches kids Israeli traffic rules by driving. Instead of memorizing rules from a book, players get behind the wheel, drive through a city, and learn what to do at traffic lights, roundabouts, and crosswalks. Every rule followed earns a star.
 
-**New here?** [See the whole game on one animated page](https://dimastatz.github.io/bendi-go/): every milestone and requirement, each with a short animation ([source](docs/index.html)).
+**New here?** [See the whole game on one animated page](https://dimastatz.github.io/bendi-go/docs/): every milestone and requirement, each with a short animation ([source](docs/index.html)).
 
 ### How It Works
 Players drive around a city full of real-world traffic situations. When they handle a situation correctly, they earn stars:

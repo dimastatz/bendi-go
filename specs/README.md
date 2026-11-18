@@ -12,6 +12,7 @@ Each PRD describes one milestone. Every milestone ends with a version of the gam
 | [PRD-006](prd-006-driving-lessons-and-license.md) | Driving Lessons and License | Guided lessons, saved progress, and a Bendi Go driving license |
 | [PRD-007](prd-007-realistic-graphics.md) | Realistic Graphics | Realistic light, day and night, street lamps, painted curbs, and more detailed buildings, trees, and cars |
 | [PRD-008](prd-008-brake-lights.md) | Brake Lights | The Bendi car's brake lights turn on when it slows down or stops |
+| [PRD-009](prd-009-levels-and-goals.md) | Levels and Goals | A clear goal and a progress bar for every drive, medals at the finish, and levels from Learner to Expert |
 
 ## Rules for every milestone
 
