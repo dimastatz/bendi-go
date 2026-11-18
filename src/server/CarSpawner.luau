@@ -1,6 +1,7 @@
 -- Gives every player their own Bendi car and keeps them in the driver's seat.
 -- Each player's car is rebuilt when their character respawns and removed when they leave.
--- A car's "Licensed" attribute follows its player's, so every client can show the licensed driver badge (PRD-006).
+-- A car's "Licensed" and "Level" attributes follow its player's, so every client can show the licensed driver badge
+-- (PRD-006) and the player's level (PRD-009).
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -56,6 +57,13 @@ local function seatDriver(player: Player, seat: VehicleSeat, humanoid: Humanoid)
 	seat:SetNetworkOwner(player)
 end
 
+-- What other players see above the car: the licensed driver badge and the level.
+local function copyBadges(player: Player, car: Model)
+	car:SetAttribute("Licensed", player:GetAttribute("Licensed") == true)
+	local level = player:GetAttribute("Level")
+	car:SetAttribute("Level", if type(level) == "number" then level else nil)
+end
+
 local function onCharacterAdded(player: Player, character: Model)
 	removeCar(player)
 	CollisionGroups.addPlayerParts(character)
@@ -63,7 +71,7 @@ local function onCharacterAdded(player: Player, character: Model)
 	local humanoid = character:WaitForChild("Humanoid") :: Humanoid
 	local car = CarBuilder.build(slotOrigin(takeSlot(player)))
 	car.Name = `BendiCar_{player.Name}`
-	car:SetAttribute("Licensed", player:GetAttribute("Licensed") == true)
+	copyBadges(player, car)
 	CollisionGroups.addPlayerParts(car)
 	car.Parent = workspace
 	cars[player] = car
@@ -81,12 +89,14 @@ local function onCharacterAdded(player: Player, character: Model)
 end
 
 local function onPlayerAdded(player: Player)
-	player:GetAttributeChangedSignal("Licensed"):Connect(function()
-		local car = cars[player]
-		if car then
-			car:SetAttribute("Licensed", player:GetAttribute("Licensed") == true)
-		end
-	end)
+	for _, name in { "Licensed", "Level" } do
+		player:GetAttributeChangedSignal(name):Connect(function()
+			local car = cars[player]
+			if car then
+				copyBadges(player, car)
+			end
+		end)
+	end
 	player.CharacterAdded:Connect(function(character)
 		onCharacterAdded(player, character)
 	end)

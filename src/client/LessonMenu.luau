@@ -1,6 +1,7 @@
--- The Lessons button and menu (PRD-006, requirements 4 and 5), and what to do next after each lesson.
--- The menu shows every lesson and the driving test: whether it's locked or passed, and its best star count. Locked
--- lessons can't be started, and Free driving ends the current lesson. The server checks every request too.
+-- The Levels button and menu (PRD-006, requirements 4 and 5, and PRD-009, requirements 15 and 16).
+-- The menu shows the player's level with a progress bar, then every level with its sessions: whether each one is
+-- open, locked, or passed, and its best medal. Starting a session shows its goal card first, and Free driving ends
+-- the current session. The server checks every request too.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -9,7 +10,9 @@ local Core = ReplicatedStorage:WaitForChild("Core")
 local Lessons = require(Core:WaitForChild("Lessons"))
 local Progress = require(Core:WaitForChild("Progress"))
 
+local GoalPanel = require(script.Parent.GoalPanel)
 local LicenseCard = require(script.Parent.LicenseCard)
+local SessionCards = require(script.Parent.SessionCards)
 local Text = require(script.Parent.Text)
 
 local LessonMenu = {}
@@ -19,7 +22,9 @@ local GREEN = Color3.fromRGB(60, 170, 80)
 local GRAY = Color3.fromRGB(175, 178, 185)
 local YELLOW = Color3.fromRGB(250, 200, 30)
 local INK = Color3.fromRGB(35, 35, 40)
+local MUTED = Color3.fromRGB(100, 100, 110)
 local ROW_HEIGHT = 64
+local MEDAL_ICONS = { "🥉", "🥈", "🥇" }
 
 local lessonEvent: RemoteEvent
 local progress: Progress.Data = Progress.new()
@@ -28,10 +33,9 @@ local rightToLeft = false
 local screen: ScreenGui
 local menu: Frame
 local list: ScrollingFrame
+local header: TextLabel
+local headerBar: Frame
 local licenseButton: TextButton
-local result: Frame
-local resultText: TextLabel
-local resultButtons: Frame
 
 local function rounded(frame: GuiObject, radius: number)
 	local corner = Instance.new("UICorner")
@@ -78,49 +82,46 @@ local function fromEnd(item: GuiObject, offset: number, y: number)
 	item.Position = UDim2.new(if rightToLeft then 0 else 1, if rightToLeft then offset else -offset, 0, y)
 end
 
--- A row of buttons, centered.
-local function buttonRow(parent: Instance, name: string): Frame
-	local row = Instance.new("Frame")
-	row.Name = name
-	row.BackgroundTransparency = 1
-	row.Parent = parent
-	local layout = Instance.new("UIListLayout")
-	layout.FillDirection = Enum.FillDirection.Horizontal
-	layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-	layout.VerticalAlignment = Enum.VerticalAlignment.Center
-	layout.Padding = UDim.new(0, 8)
-	layout.SortOrder = Enum.SortOrder.LayoutOrder
-	layout.Parent = row
-	return row
-end
-
-local function startLesson(id: string)
-	lessonEvent:FireServer("start", id)
-	menu.Visible = false
-	result.Visible = false
+local function levelName(level: number): string
+	return `{Text.format("levelNumber", { number = level })} · {Text.get(Lessons.LEVELS[level].title)}`
 end
 
 local function statusText(lesson: Lessons.Lesson): string
 	if not Progress.isUnlocked(progress, lesson.id) then
 		return `🔒 {Text.get("locked")}`
 	end
-	local best = Progress.best(progress, lesson.id)
 	if Progress.isPassed(progress, lesson.id) then
-		return if lesson.isTest then "✅" else Text.format("passedBest", { stars = best })
-	end
-	if best > 0 and not lesson.isTest then
-		return Text.format("bestSoFar", { stars = best })
+		local icon = MEDAL_ICONS[Progress.medal(progress, lesson.id)] or "✅"
+		return `{icon} {Text.get("passed")}`
 	end
 	return Text.get("notTried")
 end
 
-local function makeRow(lesson: Lessons.Lesson)
+-- A level's title, with how much of it is passed or what opens it.
+local function makeLevelRow(level: number, order: number)
+	local row = textLabel(list, `Level{level}`, UDim2.new(1, -8, 0, 0), 17)
+	row.AutomaticSize = Enum.AutomaticSize.Y
+	row.LayoutOrder = order
+	local passed, total = Progress.levelProgress(progress, level)
+	local detail = if Progress.isLevelOpen(progress, level)
+		then Text.format("levelProgress", { passed = passed, total = total })
+		else `🔒 {Text.format("levelLocked", { number = level - 1 })}`
+	row.Text = `{levelName(level)}\n<font size="14" color="#64646E">{detail}</font>`
+	row.RichText = true
+	local padding = Instance.new("UIPadding")
+	padding.PaddingTop = UDim.new(0, 8)
+	padding.PaddingLeft = UDim.new(0, 6)
+	padding.PaddingRight = UDim.new(0, 6)
+	padding.Parent = row
+end
+
+local function makeRow(lesson: Lessons.Lesson, order: number)
 	local unlocked = Progress.isUnlocked(progress, lesson.id)
 	local passed = Progress.isPassed(progress, lesson.id)
 
 	local row = Instance.new("Frame")
 	row.Name = lesson.id
-	row.LayoutOrder = lesson.number
+	row.LayoutOrder = order
 	row.Size = UDim2.new(1, -8, 0, ROW_HEIGHT - 6)
 	row.BackgroundColor3 = Color3.fromRGB(244, 245, 248)
 	row.Parent = list
@@ -133,20 +134,27 @@ local function makeRow(lesson: Lessons.Lesson)
 	badge.TextColor3 = Color3.new(1, 1, 1)
 	badge.Font = Enum.Font.GothamBold
 	badge.TextSize = 20
-	badge.Text = if lesson.isTest then "🏁" else tostring(lesson.number)
+	badge.Text = if lesson.isTest
+		then "🏁"
+		elseif lesson.night then "🌙"
+		elseif lesson.expert then "🧭"
+		elseif lesson.busy then "🚦"
+		elseif lesson.mission then "⭐"
+		else tostring(lesson.number)
 	badge.Parent = row
 	rounded(badge, 20)
 	fromStart(badge, 10, (ROW_HEIGHT - 6) / 2)
 
 	local name = textLabel(row, "Title", UDim2.new(1, -170, 0, 22), 17)
-	name.Text = Text.get(lesson.title)
+	name.Text = GoalPanel.title(lesson)
 	name.TextTruncate = Enum.TextTruncate.AtEnd
 	fromStart(name, 60, 18)
 
 	local status = textLabel(row, "Status", UDim2.new(1, -170, 0, 18), 14)
 	status.Font = Enum.Font.GothamMedium
-	status.TextColor3 = Color3.fromRGB(100, 100, 110)
-	status.Text = statusText(lesson)
+	status.TextColor3 = MUTED
+	status.TextTruncate = Enum.TextTruncate.AtEnd
+	status.Text = `{statusText(lesson)} · {GoalPanel.goal(lesson)}`
 	fromStart(status, 60, 40)
 
 	local start = button(row, "Start", Text.get("start"), if unlocked then GREEN else GRAY, UDim2.fromOffset(92, 40))
@@ -154,21 +162,34 @@ local function makeRow(lesson: Lessons.Lesson)
 	fromEnd(start, 10, (ROW_HEIGHT - 6) / 2)
 	if unlocked then
 		start.Activated:Connect(function()
-			startLesson(lesson.id)
+			menu.Visible = false
+			SessionCards.showGoal(lesson.id)
 		end)
 	end
 end
 
 local function refresh()
 	for _, child in list:GetChildren() do
-		if child:IsA("Frame") then
+		if child:IsA("GuiObject") then
 			child:Destroy()
 		end
 	end
-	for _, lesson in Lessons.LIST do
-		makeRow(lesson)
+	local order = 0
+	for _, level in Lessons.LEVELS do
+		order += 1
+		makeLevelRow(level.number, order)
+		for _, lesson in Lessons.inLevel(level.number) do
+			order += 1
+			makeRow(lesson, order)
+		end
 	end
+
+	local level = Progress.level(progress)
+	local passed, total = Progress.levelProgress(progress, level)
+	header.Text = `{levelName(level)} · {Text.format("levelProgress", { passed = passed, total = total })}`
+	headerBar.Size = UDim2.fromScale(if total > 0 then passed / total else 1, 1)
 	licenseButton.Visible = progress.license ~= nil
+	SessionCards.refresh()
 end
 
 local function createMenu()
@@ -182,17 +203,37 @@ local function createMenu()
 	menu.Parent = screen
 	rounded(menu, 18)
 	local limit = Instance.new("UISizeConstraint")
-	limit.MaxSize = Vector2.new(460, 580)
+	limit.MaxSize = Vector2.new(480, 620)
 	limit.Parent = menu
 
-	local title = textLabel(menu, "Title", UDim2.new(1, -32, 0, 40), 26)
+	local title = textLabel(menu, "Title", UDim2.new(1, -32, 0, 34), 26)
 	title.Position = UDim2.fromOffset(16, 8)
-	title.Text = Text.get("lessons")
+	title.Text = Text.get("levels")
+
+	-- The player's level, with a bar for how much of it is passed.
+	header = textLabel(menu, "Level", UDim2.new(1, -32, 0, 18), 15)
+	header.Position = UDim2.fromOffset(16, 44)
+	header.Font = Enum.Font.GothamMedium
+	header.TextColor3 = MUTED
+	local track = Instance.new("Frame")
+	track.Name = "LevelBar"
+	track.Position = UDim2.fromOffset(16, 66)
+	track.Size = UDim2.new(1, -32, 0, 8)
+	track.BackgroundColor3 = Color3.fromRGB(225, 227, 232)
+	track.BorderSizePixel = 0
+	track.Parent = menu
+	rounded(track, 4)
+	headerBar = Instance.new("Frame")
+	headerBar.Size = UDim2.fromScale(0, 1)
+	headerBar.BackgroundColor3 = YELLOW
+	headerBar.BorderSizePixel = 0
+	headerBar.Parent = track
+	rounded(headerBar, 4)
 
 	list = Instance.new("ScrollingFrame")
 	list.Name = "List"
-	list.Position = UDim2.fromOffset(12, 54)
-	list.Size = UDim2.new(1, -24, 1, -124)
+	list.Position = UDim2.fromOffset(12, 82)
+	list.Size = UDim2.new(1, -24, 1, -152)
 	list.BackgroundTransparency = 1
 	list.BorderSizePixel = 0
 	list.ScrollBarThickness = 6
@@ -205,10 +246,20 @@ local function createMenu()
 	layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 	layout.Parent = list
 
-	local buttons = buttonRow(menu, "Buttons")
+	local buttons = Instance.new("Frame")
+	buttons.Name = "Buttons"
+	buttons.BackgroundTransparency = 1
 	buttons.AnchorPoint = Vector2.new(0, 1)
 	buttons.Position = UDim2.new(0, 0, 1, -10)
 	buttons.Size = UDim2.new(1, 0, 0, 50)
+	buttons.Parent = menu
+	local row = Instance.new("UIListLayout")
+	row.FillDirection = Enum.FillDirection.Horizontal
+	row.HorizontalAlignment = Enum.HorizontalAlignment.Center
+	row.VerticalAlignment = Enum.VerticalAlignment.Center
+	row.Padding = UDim.new(0, 8)
+	row.SortOrder = Enum.SortOrder.LayoutOrder
+	row.Parent = buttons
 
 	local free = button(buttons, "FreeDriving", Text.get("freeDriving"), BLUE, UDim2.fromOffset(140, 44))
 	free.LayoutOrder = 1
@@ -231,73 +282,10 @@ local function createMenu()
 	end)
 end
 
-local function createResult()
-	result = Instance.new("Frame")
-	result.Name = "Result"
-	result.AnchorPoint = Vector2.new(0.5, 0.5)
-	result.Position = UDim2.fromScale(0.5, 0.55)
-	result.Size = UDim2.new(0.92, 0, 0, 190)
-	result.BackgroundColor3 = Color3.new(1, 1, 1)
-	result.Visible = false
-	result.Parent = screen
-	rounded(result, 18)
-	local limit = Instance.new("UISizeConstraint")
-	limit.MaxSize = Vector2.new(460, 190)
-	limit.Parent = result
-
-	resultText = textLabel(result, "Text", UDim2.new(1, -32, 0, 100), 22)
-	resultText.Position = UDim2.fromOffset(16, 12)
-	resultText.TextXAlignment = Enum.TextXAlignment.Center
-
-	resultButtons = buttonRow(result, "Buttons")
-	resultButtons.AnchorPoint = Vector2.new(0, 1)
-	resultButtons.Position = UDim2.new(0, 0, 1, -14)
-	resultButtons.Size = UDim2.new(1, 0, 0, 50)
-end
-
--- What to do after a lesson: the next lesson, the same one again, or free driving.
-local function showResult(id: string, stars: number, passed: boolean, nextId: string?)
-	local lesson = Lessons.get(id)
-	if not lesson then
-		return
-	end
-	local values = { stars = stars, need = Lessons.PASS_STARS }
-	if lesson.isTest then
-		resultText.Text = Text.get(if passed then "testPassed" else "testFailed")
-	else
-		resultText.Text = Text.format(if passed then "lessonPassed" else "lessonTryAgain", values)
-	end
-
-	for _, child in resultButtons:GetChildren() do
-		if child:IsA("TextButton") then
-			child:Destroy()
-		end
-	end
-	local after = Lessons.after(id)
-	local following = nextId or (if passed and after then after.id else nil)
-	if following and Progress.isUnlocked(progress, following) then
-		local nextButton = button(resultButtons, "Next", Text.get("nextLesson"), GREEN, UDim2.fromOffset(140, 44))
-		nextButton.LayoutOrder = 1
-		nextButton.Activated:Connect(function()
-			startLesson(following)
-		end)
-	end
-	if not (lesson.isTest and passed) then
-		local again = button(resultButtons, "Again", Text.get("tryAgain"), BLUE, UDim2.fromOffset(130, 44))
-		again.LayoutOrder = 2
-		again.Activated:Connect(function()
-			startLesson(id)
-		end)
-	end
-	local free = button(resultButtons, "FreeDriving", Text.get("freeDriving"), GRAY, UDim2.fromOffset(140, 44))
-	free.LayoutOrder = 3
-	free.Activated:Connect(function()
-		result.Visible = false
-	end)
-
+local function startSession(id: string)
+	lessonEvent:FireServer("start", id)
 	menu.Visible = false
-	-- The license card shows itself after the test, so the result would only cover it.
-	result.Visible = not (lesson.isTest and passed)
+	SessionCards.hide()
 end
 
 function LessonMenu.start()
@@ -309,17 +297,19 @@ function LessonMenu.start()
 	screen.ResetOnSpawn = false
 	screen.DisplayOrder = 5
 
-	local open = button(screen, "Lessons", `📚 {Text.get("lessons")}`, BLUE, UDim2.fromOffset(150, 48))
+	local open = button(screen, "Levels", `🏆 {Text.get("levels")}`, BLUE, UDim2.fromOffset(150, 48))
 	open.AnchorPoint = Vector2.new(1, 0)
 	open.Position = UDim2.new(1, -12, 0, 8)
 	open.TextSize = 20
 	open.Activated:Connect(function()
-		result.Visible = false
+		SessionCards.hide()
 		menu.Visible = not menu.Visible
 	end)
 
 	createMenu()
-	createResult()
+	SessionCards.init(screen, startSession, function()
+		return progress
+	end)
 	refresh()
 	screen.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
 
@@ -327,11 +317,14 @@ function LessonMenu.start()
 		if message == "progress" then
 			progress = Progress.sanitize((...))
 			refresh()
+		elseif message == "offer" then
+			SessionCards.showGoal((...))
 		elseif message == "finished" then
-			showResult(...)
+			menu.Visible = false
+			SessionCards.showResult((...))
 		elseif message == "lesson" then
 			menu.Visible = false
-			result.Visible = false
+			SessionCards.hide()
 		elseif message == "license" then
 			LicenseCard.show((...), true)
 		end

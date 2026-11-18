@@ -13,6 +13,7 @@ local DayCycle = require(Core:WaitForChild("DayCycle"))
 local SpeedZones = require(Core:WaitForChild("SpeedZones"))
 local Units = require(Core:WaitForChild("Units"))
 
+local DayNight = require(script.Parent.DayNight)
 local Text = require(script.Parent.Text)
 
 local Dashboard = {}
@@ -181,7 +182,7 @@ function Dashboard.show(car: Model, base: BasePart)
 		limit = SpeedZones.limitAt(base.Position.X, base.Position.Z) or limit
 		gauges.limit.Text = tostring(limit)
 
-		local hour = DayCycle.clockAt(workspace:GetServerTimeNow())
+		local hour = DayNight.hour()
 		clock.Text = Cockpit.clockText(hour)
 		sky.Text = if DayCycle.lightsOn(hour) then "🌙" else "☀️"
 	end)

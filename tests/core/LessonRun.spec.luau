@@ -93,4 +93,105 @@ test("nothing counts after the run is finished", function()
 	expectEqual(#run.missed, 0)
 end)
 
+local function mission(kind: string): Lessons.Lesson
+	for _, item in Lessons.LIST do
+		if item.goal.kind == kind and item.mission then
+			return item
+		end
+	end
+	error(`no mission with a {kind} goal`)
+end
+
+test("star keys match their rule, with or without a number", function()
+	expectEqual(LessonRun.isRuleStar("light2", "light"), true)
+	expectEqual(LessonRun.isRuleStar("segment10", "segment"), true)
+	expectEqual(LessonRun.isRuleStar("giveWay", "giveWay"), true)
+	expectEqual(LessonRun.isRuleStar("lightning", "light"), false)
+	expectEqual(LessonRun.isRuleStar("crosswalk1", "light"), false)
+	expectEqual(LessonRun.isRuleStar("stop", "stop"), true)
+end)
+
+test("a goal about one rule counts only that rule's stars", function()
+	local item = mission("rule")
+	local rule = item.goal.rule :: string
+	local need = item.goal.count :: number
+	local run = LessonRun.new(item)
+	LessonRun.onEvent(run, RuleKit.star(if rule == "light" then "segment1" else "light1"))
+	for index = 1, need - 1 do
+		LessonRun.onEvent(run, RuleKit.star(`{rule}{index}`))
+	end
+	local count, needed = LessonRun.progress(run)
+	expectEqual(count, need - 1)
+	expectEqual(needed, need)
+	expectEqual(run.stars, need)
+	driveAll(run)
+	expectEqual(LessonRun.passed(run), false)
+	expectEqual(LessonRun.medal(run), 0)
+
+	run = LessonRun.new(item)
+	for index = 1, need do
+		LessonRun.onEvent(run, RuleKit.star(`{rule}{index}`))
+	end
+	driveAll(run)
+	expectEqual(LessonRun.passed(run), true)
+end)
+
+test("a star goal counts every star", function()
+	local run = LessonRun.new(lesson("basics"))
+	LessonRun.onEvent(run, RuleKit.star("segment1"))
+	LessonRun.onEvent(run, RuleKit.star("light1"))
+	local count, need = LessonRun.progress(run)
+	expectEqual(count, 2)
+	expectEqual(need, Lessons.PASS_STARS)
+end)
+
+test("a clean goal counts missed rules, and a finish goal is met by finishing", function()
+	local run = LessonRun.new(lesson("test"))
+	LessonRun.onEvent(run, RuleKit.tip("ranRed"))
+	local count, need = LessonRun.progress(run)
+	expectEqual(count, 1)
+	expectEqual(need, nil)
+
+	run = LessonRun.new(mission("finish"))
+	expectEqual(select(1, LessonRun.progress(run)), 0)
+	expectEqual(select(2, LessonRun.progress(run)), nil)
+	LessonRun.onEvent(run, RuleKit.tip("ranRed"))
+	expectEqual(LessonRun.passed(run), false) -- not finished yet
+	driveAll(run)
+	expectEqual(LessonRun.passed(run), true)
+end)
+
+test("medals: gold with no rules missed, silver with one, bronze with more", function()
+	local item = mission("finish")
+	-- The medal for 0, 1, 2, and 3 rules missed.
+	local expected = { LessonRun.GOLD, LessonRun.SILVER, LessonRun.BRONZE, LessonRun.BRONZE }
+	for missed = 0, 3 do
+		local run = LessonRun.new(item)
+		for _ = 1, missed do
+			LessonRun.onEvent(run, RuleKit.tip("tooFastTown"))
+		end
+		expectEqual(LessonRun.medal(run), 0) -- not finished
+		driveAll(run)
+		expectEqual(LessonRun.medal(run), expected[missed + 1])
+	end
+end)
+
+test("a passed driving test is always gold", function()
+	local run = LessonRun.new(lesson("test"))
+	driveAll(run)
+	expectEqual(LessonRun.medal(run), LessonRun.GOLD)
+end)
+
+test("the practice list names each kind of missed rule once, at most two, in order", function()
+	local run = LessonRun.new(lesson("test"))
+	for _, tip in { "tooFastTown", "tooFastSchool", "ranRed", "rolledStop", "flashingGreen" } do
+		LessonRun.onEvent(run, RuleKit.tip(tip))
+	end
+	local practice = LessonRun.practice(run)
+	expectEqual(#practice, 2)
+	expectEqual(practice[1], "practiceSpeed")
+	expectEqual(practice[2], "practiceLights")
+	expectEqual(#LessonRun.practice(LessonRun.new(lesson("test"))), 0)
+end)
+
 TestKit.finish()

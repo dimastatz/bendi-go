@@ -156,4 +156,21 @@ test("status shows waiting and crossing for each crosswalk", function()
 	expectEqual(Walkers.status(walkers)[3].waiting, true)
 end)
 
+test("on a busy mission, people set off for their next crossing sooner", function()
+	local calm = Walkers.create(makeRandom())
+	local busy = Walkers.create(makeRandom())
+	local leftCalm, leftBusy = 0, 0
+	for _ = 1, 8 * 10 do
+		Walkers.step(calm, {}, 0, 0.1, makeRandom())
+		Walkers.step(busy, {}, 0, 0.1, makeRandom(), Walkers.BUSY_PACE)
+	end
+	for index, walker in busy do
+		if walker.crosswalk then
+			leftBusy += if walker.phase ~= "idle" then 1 else 0
+			leftCalm += if calm[index].phase ~= "idle" then 1 else 0
+		end
+	end
+	expectEqual(leftBusy > leftCalm, true)
+end)
+
 TestKit.finish()

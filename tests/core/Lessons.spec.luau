@@ -31,11 +31,12 @@ local function lesson(id: string): Lessons.Lesson
 	return assert(Lessons.get(id))
 end
 
-test("there are five lessons and then the driving test, numbered in order", function()
-	expectEqual(#Lessons.LIST, 6)
+test("there are five lessons, then the driving test, then the missions, numbered in order", function()
+	expectEqual(#Lessons.LIST > 6, true)
 	for index, item in Lessons.LIST do
 		expectEqual(item.number, index)
 		expectEqual(item.isTest, index == 6)
+		expectEqual(item.mission, index > 6)
 		expectEqual(Strings.TEXT[item.title] ~= nil, true)
 		expectEqual(Strings.TEXT[item.intro] ~= nil, true)
 	end
@@ -43,12 +44,146 @@ test("there are five lessons and then the driving test, numbered in order", func
 	expectEqual(Lessons.LIST[6].id, "test")
 end)
 
+test("there are seven levels, in order, each with a name and sessions", function()
+	expectEqual(#Lessons.LEVELS, 7)
+	for index, level in Lessons.LEVELS do
+		expectEqual(level.number, index)
+		expectEqual(Strings.TEXT[level.title] ~= nil, true)
+		local sessions = Lessons.inLevel(index)
+		expectEqual(#sessions >= (if index >= 4 then 2 else 1), true)
+		for _, item in sessions do
+			expectEqual(item.mission, index >= 4)
+		end
+	end
+	expectEqual(#Lessons.inLevel(8), 0)
+end)
+
+test("sessions come in level order, and lessons 1-2, 3-4, and 5 with the test make the first three levels", function()
+	local previous = 1
+	for _, item in Lessons.LIST do
+		expectEqual(item.level >= previous, true)
+		previous = item.level
+	end
+	local ids = {}
+	for level = 1, 3 do
+		for _, item in Lessons.inLevel(level) do
+			table.insert(ids, item.id)
+		end
+	end
+	expectEqual(table.concat(ids, " "), "basics lights speed crosswalks junctions test")
+end)
+
+test("busy missions are level 5, night missions level 6, and expert missions level 7", function()
+	for _, item in Lessons.LIST do
+		expectEqual(item.busy == true, item.level == 5)
+		expectEqual(item.night == true, item.level == 6)
+		expectEqual(item.expert == true, item.level == 7)
+	end
+end)
+
+test("lessons need 3 stars, the test needs every rule, and every goal has its text", function()
+	for _, item in Lessons.LIST do
+		local goal = item.goal
+		if not item.mission and not item.isTest then
+			expectEqual(goal.kind, "stars")
+			expectEqual(goal.count, Lessons.PASS_STARS)
+		end
+		if goal.kind == "rule" then
+			expectEqual(Strings.TEXT[Lessons.RULE_GOALS[goal.rule :: string]] ~= nil, true)
+		end
+		if goal.kind == "stars" or goal.kind == "rule" then
+			expectEqual((goal.count :: number) > 0, true)
+		else
+			expectEqual(goal.count, nil)
+		end
+	end
+	expectEqual(lesson("test").goal.kind, "clean")
+	for _, key in Lessons.RULE_GOALS do
+		expectEqual(Strings.TEXT[key] ~= nil, true)
+	end
+end)
+
+test("goal text names the goal and fills in its count", function()
+	local key, values = Lessons.goalText({ kind = "rule", rule = "light", count = 3 })
+	expectEqual(key, "goalLight")
+	expectEqual(values.count, 3)
+	key, values = Lessons.goalText({ kind = "stars", count = 4 })
+	expectEqual(key, "goalStars")
+	expectEqual(values.count, 4)
+	expectEqual((Lessons.goalText({ kind = "clean" })), "goalClean")
+	expectEqual((Lessons.goalText({ kind = "finish" })), "goalFinish")
+	for _, item in Lessons.LIST do
+		expectEqual(Strings.TEXT[(Lessons.goalText(item.goal))] ~= nil, true)
+	end
+end)
+
+-- How many different places on the route give a star for `rule`.
+local function placesFor(item: Lessons.Lesson, rule: string): number
+	local count = 0
+	if rule == "light" then
+		for _, crossing in Config.CROSSINGS do
+			count += if passes(item, crossing.x, crossing.z) then 1 else 0
+		end
+	elseif rule == "crosswalk" then
+		for _, crosswalk in TownLayout.CROSSWALKS do
+			local x, z = crosswalk.at, crosswalk.along
+			if crosswalk.alongX then
+				x, z = crosswalk.along, crosswalk.at
+			end
+			count += if passes(item, x, z) then 1 else 0
+		end
+	elseif rule == "segment" then
+		-- A street segment counts when one piece of the route drives all of it.
+		for _, segment in TownLayout.segments() do
+			for index = 1, #item.nodes - 1 do
+				local from, to = item.nodes[index], item.nodes[index + 1]
+				local alongX = from[2] == to[2]
+				local at = if alongX then from[2] else from[1]
+				local a, b = if alongX then from[1] else from[2], if alongX then to[1] else to[2]
+				if
+					segment.alongX == alongX
+					and segment.at == at
+					and math.min(a, b) <= segment.from
+					and math.max(a, b) >= segment.to
+				then
+					count += 1
+				end
+			end
+		end
+	elseif rule == "roundabout" then
+		local sides = {}
+		for index = 2, #item.nodes - 1 do
+			local node, before = item.nodes[index], item.nodes[index - 1]
+			if node[1] == Junctions.CENTER_X and node[2] == Junctions.CENTER_Z then
+				sides[`{math.sign(node[1] - before[1])},{math.sign(node[2] - before[2])}`] = true
+			end
+		end
+		for _ in sides do
+			count += 1
+		end
+	end
+	return count
+end
+
+test("every goal about one rule can be reached on its route", function()
+	for _, item in Lessons.LIST do
+		local goal = item.goal
+		if goal.kind == "rule" then
+			local places = placesFor(item, goal.rule :: string)
+			if places < (goal.count :: number) then
+				error(`{item.id} needs {goal.count} {goal.rule} stars but passes only {places} places`)
+			end
+		end
+	end
+end)
+
 test("get and after find lessons by id", function()
 	expectEqual(lesson("lights").number, 2)
 	expectEqual(Lessons.get("flying"), nil)
 	expectEqual((Lessons.after("basics") :: Lessons.Lesson).id, "lights")
 	expectEqual((Lessons.after("junctions") :: Lessons.Lesson).id, "test")
-	expectEqual(Lessons.after("test"), nil)
+	expectEqual((Lessons.after("test") :: Lessons.Lesson).id, "schoolRun")
+	expectEqual(Lessons.after(Lessons.LIST[#Lessons.LIST].id), nil)
 	expectEqual(Lessons.after("flying"), nil)
 end)
 

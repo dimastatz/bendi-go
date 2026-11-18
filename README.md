@@ -78,9 +78,21 @@ People walk around town and cross at four zebra crosswalks. Stop before the stri
 
 Other cars drive around town and follow the same rules. At the roundabout, give way to cars already going around; at the stop signs, stop completely before the line; at the give-way sign, let cars on the main road go first. Each earns a star.
 
-The **Lessons** button opens five short lessons, one for each rule: driving basics, traffic lights, speed limits, crosswalks, and roundabouts and signs. Follow the arrows on the road and the mini-map, and earn at least 3 stars to pass and open the next lesson. A new player starts lesson 1 right away, and **Free driving** is always one tap away. After all five lessons, the driving test opens: follow every rule on a longer route to earn your own Bendi Go driving license, and a "Licensed driver" badge on your car that everyone can see.
+The **Levels** button opens seven levels of driving sessions. Every session starts with a goal card, like "Stop at 3 red lights", and a panel at the top left shows your goal and how much of the route is left. At the finish line you get a bronze, silver, or gold medal, or "Not yet" with a tip on what to practise; mistakes never end a drive early, and you never lose anything. Passing every session in a level opens the next one:
 
-Stars, lessons, and the license are saved with Roblox DataStores. In Studio, saving only works once the place is published and **Game Settings → Security → Enable Studio Access to API Services** is on; without it, the game still works and just doesn't save.
+| Level | Sessions |
+| :---- | :------- |
+| 1. Learner | Lessons 1 and 2: driving basics, traffic lights |
+| 2. Road user | Lessons 3 and 4: speed limits, crosswalks |
+| 3. Test day | Lesson 5 (roundabouts and signs), then the driving test |
+| 4. Licensed driver | Missions that mix rules on longer routes |
+| 5. Busy town | Missions on the busiest streets, with more people crossing |
+| 6. Night driver | Missions at night, just for you |
+| 7. Expert | No arrows: your instructor tells you where to turn |
+
+Lessons need 3 stars to pass. A new player sees lesson 1's goal card right away, and **Free driving** is always one tap away. Passing the driving test earns your own Bendi Go driving license and a "Licensed driver" badge on your car, next to your level, that everyone can see.
+
+Stars, passed sessions, medals, and the license are saved with Roblox DataStores. In Studio, saving only works once the place is published and **Game Settings → Security → Enable Studio Access to API Services** is on; without it, the game still works and just doesn't save.
 
 One stud is 0.28 m, so the car's top speed of 70 km/h is about 69 studs per second. All speeds go through `src/core/Units.luau`.
 
