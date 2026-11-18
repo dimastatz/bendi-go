@@ -119,7 +119,6 @@ Strings.TEXT = {
 	stopWord = { en = "STOP", he = "עצור" },
 
 	-- Driving lessons and the license (PRD-006). Text in {braces} is filled in by the game.
-	lessons = { en = "Lessons", he = "שיעורים" },
 	lessonNumber = { en = "Lesson {number}", he = "שיעור {number}" },
 	lessonBasics = { en = "Driving basics", he = "יסודות הנהיגה" },
 	lessonLights = { en = "Traffic lights", he = "רמזורים" },
@@ -130,11 +129,8 @@ Strings.TEXT = {
 	start = { en = "Start", he = "התחלה" },
 	locked = { en = "Locked", he = "נעול" },
 	notTried = { en = "Not passed yet", he = "עוד לא עברת" },
-	passedBest = { en = "Passed! Best: {stars} ⭐", he = "עברת! שיא: {stars} ⭐" },
-	bestSoFar = { en = "Best so far: {stars} ⭐", he = "שיא עד עכשיו: {stars} ⭐" },
 	freeDriving = { en = "Free driving", he = "נהיגה חופשית" },
 	tryAgain = { en = "Try again", he = "לנסות שוב" },
-	nextLesson = { en = "Next lesson", he = "לשיעור הבא" },
 	close = { en = "Close", he = "סגירה" },
 	introBasics = {
 		en = "Let's learn to drive! Follow the arrows on the road and keep to the right side of the street.",
@@ -161,17 +157,9 @@ Strings.TEXT = {
 		he = "זה מבחן הנהיגה שלך! שומרים על כל החוקים עד הסוף כדי לקבל רישיון.",
 	},
 	lessonStars = { en = "{stars} of {need} ⭐", he = "{stars} מתוך {need} ⭐" },
-	lessonPassed = {
-		en = "You passed the lesson with {stars} stars!",
-		he = "עברת את השיעור עם {stars} כוכבים!",
-	},
-	lessonTryAgain = {
-		en = "You got {stars} stars, and you need {need} to pass. Let's try again!",
-		he = "קיבלת {stars} כוכבים, וצריך {need} כדי לעבור. בואו ננסה שוב!",
-	},
 	lessonUnlocked = {
-		en = "A new lesson is open! Find it in the Lessons menu.",
-		he = "נפתח שיעור חדש! אפשר למצוא אותו בתפריט השיעורים.",
+		en = "Something new is open! Find it in the Levels menu.",
+		he = "נפתח משהו חדש! אפשר למצוא אותו בתפריט השלבים.",
 	},
 	testUnlocked = {
 		en = "You passed every lesson! The driving test is open.",
@@ -181,16 +169,147 @@ Strings.TEXT = {
 		en = "You passed the driving test! Here is your license!",
 		he = "עברת את מבחן הנהיגה! הנה הרישיון שלך!",
 	},
-	testFailed = {
-		en = "Almost! A few rules were missed. Remember Bendi's tips and try again.",
-		he = "כמעט! כמה חוקים לא נשמרו. זוכרים את הטיפים של בנדי ומנסים שוב.",
-	},
 	licenseTitle = { en = "Driving License", he = "רישיון נהיגה" },
 	licenseName = { en = "Name", he = "שם" },
 	licenseDate = { en = "Date", he = "תאריך" },
 	licenseClass = { en = "Class", he = "דרגה" },
 	myLicense = { en = "My license", he = "הרישיון שלי" },
 	licensedDriver = { en = "Licensed driver", he = "יש לי רישיון!" },
+
+	-- Levels and goals (PRD-009). Text in {braces} is filled in by the game.
+	levels = { en = "Levels", he = "שלבים" },
+	levelNumber = { en = "Level {number}", he = "שלב {number}" },
+	levelProgress = { en = "{passed} of {total} passed", he = "עברת {passed} מתוך {total}" },
+	levelLocked = {
+		en = "Pass everything in level {number} to open this level.",
+		he = "עוברים את כל מה שבשלב {number} כדי לפתוח את השלב הזה.",
+	},
+	levelUp = { en = "Level up! You reached level {number}!", he = "עלית שלב! הגעת לשלב {number}!" },
+	levelLearner = { en = "Learner", he = "צעדים ראשונים" },
+	levelRoadUser = { en = "Road user", he = "על הכביש" },
+	levelTestDay = { en = "Test day", he = "יום המבחן" },
+	levelLicensed = { en = "Licensed driver", he = "נהיגה עם רישיון" },
+	levelBusyTown = { en = "Busy town", he = "עיר עמוסה" },
+	levelNight = { en = "Night driver", he = "נהיגת לילה" },
+	levelExpert = { en = "Expert", he = "מומחים" },
+	mission = { en = "Mission", he = "משימה" },
+	passed = { en = "Passed", he = "עברת" },
+	next = { en = "Next", he = "הבא" },
+	endDrive = { en = "End", he = "לסיים" },
+	yourGoal = { en = "Your goal", he = "המטרה שלך" },
+	goalRules = {
+		en = "Reach your goal by the finish line to pass. Follow every rule for a gold medal!",
+		he = "כדי לעבור, מגיעים למטרה עד קו הסיום. שומרים על כל החוקים ומקבלים מדליית זהב!",
+	},
+	goalStars = { en = "Earn {count} stars", he = "להרוויח {count} כוכבים" },
+	goalLight = { en = "Stop at {count} red lights", he = "לעצור ב-{count} רמזורים אדומים" },
+	goalSegment = {
+		en = "Keep to the limit on {count} streets",
+		he = "לשמור על המהירות ב-{count} רחובות",
+	},
+	goalCrosswalk = {
+		en = "Let people cross {count} times",
+		he = "לתת להולכי רגל לחצות {count} פעמים",
+	},
+	goalRoundabout = {
+		en = "Give way at the roundabout {count} times",
+		he = "לתת זכות קדימה בכיכר {count} פעמים",
+	},
+	goalStop = {
+		en = "Stop fully at {count} stop signs",
+		he = "לעצור עצירה מלאה ב-{count} תמרורי עצור",
+	},
+	goalGiveWay = { en = "Give way {count} times", he = "לתת זכות קדימה {count} פעמים" },
+	goalClean = { en = "Follow every rule", he = "לשמור על כל החוקים" },
+	goalFinish = { en = "Find your way to the finish", he = "למצוא את הדרך לסיום" },
+	goalCounter = { en = "{count} of {need}", he = "{count} מתוך {need}" },
+	rulesMissed = { en = "Rules missed: {count}", he = "חוקים שלא נשמרו: {count}" },
+	medalGold = { en = "Gold medal!", he = "מדליית זהב!" },
+	medalSilver = { en = "Silver medal!", he = "מדליית כסף!" },
+	medalBronze = { en = "Bronze medal!", he = "מדליית ארד!" },
+	medalGoldNote = { en = "You followed every rule.", he = "שמרת על כל החוקים." },
+	medalSilverNote = {
+		en = "Only one rule was missed. Try again for gold!",
+		he = "רק חוק אחד לא נשמר. אפשר לנסות שוב בשביל זהב!",
+	},
+	medalBronzeNote = {
+		en = "You reached your goal! Follow every rule next time for gold.",
+		he = "הגעת למטרה! בפעם הבאה שומרים על כל החוקים ומקבלים זהב.",
+	},
+	notYet = { en = "Almost!", he = "כמעט!" },
+	notYetCount = {
+		en = "You got {count} of {need}. So close!",
+		he = "הגעת ל-{count} מתוך {need}. ממש קרוב!",
+	},
+	notYetClean = {
+		en = "Rules missed this time: {count}. You can do it!",
+		he = "חוקים שלא נשמרו הפעם: {count}. אפשר להצליח!",
+	},
+	practiceLine = { en = "Practise: {rules}", he = "כדאי לתרגל: {rules}" },
+	practiceLights = { en = "stopping at red lights", he = "לעצור ברמזור אדום" },
+	practiceSpeed = { en = "keeping to the speed limit", he = "לשמור על המהירות המותרת" },
+	practiceCrosswalks = { en = "letting people cross", he = "לתת להולכי רגל לחצות" },
+	practiceRoundabout = { en = "giving way at the roundabout", he = "לתת זכות קדימה בכיכר" },
+	practiceGiveWay = {
+		en = "giving way at the give-way sign",
+		he = "לתת זכות קדימה בתמרור תן זכות קדימה",
+	},
+	practiceStop = { en = "stopping fully at stop signs", he = "לעצור לגמרי בתמרור עצור" },
+	turnRight = { en = "Turn right at the next crossing", he = "בצומת הבא פונים ימינה" },
+	turnLeft = { en = "Turn left at the next crossing", he = "בצומת הבא פונים שמאלה" },
+	roundaboutRight = {
+		en = "At the roundabout, take the first exit",
+		he = "בכיכר יוצאים ביציאה הראשונה",
+	},
+	roundaboutStraight = {
+		en = "At the roundabout, take the second exit",
+		he = "בכיכר יוצאים ביציאה השנייה",
+	},
+	roundaboutLeft = {
+		en = "At the roundabout, take the third exit",
+		he = "בכיכר יוצאים ביציאה השלישית",
+	},
+	finishAhead = { en = "The finish is just ahead!", he = "הסיום ממש לפנינו!" },
+	missionSchoolRun = { en = "School run", he = "נסיעה לבית הספר" },
+	missionRoundTrip = { en = "Roundabout round trip", he = "סיבובים בכיכר" },
+	missionRushHour = { en = "Rush hour", he = "שעת עומס" },
+	missionBusyCrosswalks = { en = "Busy crosswalks", he = "מעברי חציה עמוסים" },
+	missionNightDrive = { en = "Night drive", he = "נסיעת לילה" },
+	missionQuietNight = { en = "Quiet night", he = "לילה שקט" },
+	missionFindYourWay = { en = "Find your way", he = "מוצאים את הדרך" },
+	missionExpertLoop = { en = "Expert loop", he = "מסלול מומחים" },
+	introSchoolRun = {
+		en = "Time for school! Keep to the speed limit, and remember the school street is 30.",
+		he = "הולכים לבית הספר! שומרים על המהירות, וזוכרים שברחוב של בית הספר מותר 30.",
+	},
+	introRoundTrip = {
+		en = "Three trips into the roundabout. Give way to the cars already in it!",
+		he = "שלוש כניסות לכיכר. נותנים זכות קדימה למכוניות שכבר בתוכה!",
+	},
+	introRushHour = {
+		en = "It's rush hour! Lots of cars and people. Drive calmly and follow the rules.",
+		he = "שעת עומס! הרבה מכוניות ואנשים. נוסעים ברוגע ושומרים על החוקים.",
+	},
+	introBusyCrosswalks = {
+		en = "Many people want to cross today. Stop and let them go first.",
+		he = "היום הרבה אנשים רוצים לחצות. עוצרים ונותנים להם לעבור קודם.",
+	},
+	introNightDrive = {
+		en = "It's dark! Your headlights are on. Watch the traffic lights and drive carefully.",
+		he = "חשוך! הפנסים דולקים. שימו לב לרמזורים ונוסעים בזהירות.",
+	},
+	introQuietNight = {
+		en = "A quiet night drive. Can you follow every rule all the way?",
+		he = "נסיעת לילה שקטה. אפשר לשמור על כל החוקים כל הדרך?",
+	},
+	introFindYourWay = {
+		en = "No arrows this time! Listen to your instructor and turn where they say.",
+		he = "הפעם אין חצים! מקשיבים למורה ופונים לפי ההוראות.",
+	},
+	introExpertLoop = {
+		en = "The expert drive: no arrows, and every rule counts. Good luck!",
+		he = "נסיעת המומחים: בלי חצים, וכל חוק חשוב. בהצלחה!",
+	},
 } :: { [string]: { [string]: string } }
 
 -- Returns the language to show for the given locale ids (like "he-il" or "en-us"). The first one that is a

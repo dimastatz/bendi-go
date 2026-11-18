@@ -57,7 +57,7 @@ Players always know what they are trying to do and how close they are. Finishing
     2. **Road user:** speed limits and crosswalks (lessons 3 and 4).
     3. **Test day:** roundabouts and signs (lesson 5), then the driving test, which still earns the license and badge from PRD-006.
     4. **Licensed driver:** missions that mix rules on longer routes, such as a school run (the school zone and its crosswalk) and a roundabout round trip.
-    5. **Busy town:** missions with more NPC cars and pedestrians on the route.
+    5. **Busy town:** missions on the busiest streets, where the NPC cars drive, and while one runs, people cross at every crosswalk more often.
     6. **Night driver:** missions at night.
     7. **Expert:** missions without arrows on the road.
 

@@ -168,7 +168,8 @@ function Pedestrians.build(town: Instance)
 end
 
 -- Moves everyone every frame. `getOtherCars` returns the cars that aren't players' (the NPC cars), if any.
-function Pedestrians.start(getOtherCars: (() -> { any })?)
+-- `isBusy` says if someone is on a busy mission (PRD-009), when people cross more often.
+function Pedestrians.start(getOtherCars: (() -> { any })?, isBusy: (() -> boolean)?)
 	RunService.Heartbeat:Connect(function(dt)
 		local now = workspace:GetServerTimeNow()
 		local cars = if getOtherCars then table.clone(getOtherCars()) else {}
@@ -182,7 +183,8 @@ function Pedestrians.start(getOtherCars: (() -> { any })?)
 			end
 		end
 
-		Walkers.step(walkers, cars, now, dt, math.random)
+		local pace = if isBusy and isBusy() then Walkers.BUSY_PACE else 1
+		Walkers.step(walkers, cars, now, dt, math.random, pace)
 		for index, walker in walkers do
 			place(figures[index], walker)
 		end

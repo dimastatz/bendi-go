@@ -46,6 +46,7 @@ Walkers.SPEEDS = { kid = 5, adult = 4.5, senior = 3 }
 Walkers.MIN_INTERVAL = 20 -- seconds between crossings at a crosswalk
 Walkers.MAX_INTERVAL = 40
 Walkers.LOOK_TIME = 0.8 -- seconds looking each way before crossing
+Walkers.BUSY_PACE = 2.5 -- on a busy mission (PRD-009), people wait this many times less between crossings
 
 -- Who crosses at each crosswalk. Kids cross in front of the school.
 Walkers.CROSSWALK_KINDS = { "kid", "adult", "senior", "kid" } :: { Kind }
@@ -175,13 +176,20 @@ function Walkers.create(random: () -> number): { Walker }
 	return walkers
 end
 
-local function stepCrosser(walker: Walker, cars: { RuleKit.Car }, now: number, dt: number, random: () -> number)
+local function stepCrosser(
+	walker: Walker,
+	cars: { RuleKit.Car },
+	now: number,
+	dt: number,
+	random: () -> number,
+	pace: number
+)
 	local index = walker.crosswalk :: number
 	local side = walker.side
 	local speed = walker.speed
 
 	if walker.phase == "idle" then
-		walker.timer -= dt
+		walker.timer -= dt * pace
 		if walker.timer <= 0 then
 			walker.phase = "toCurb"
 		end
@@ -227,11 +235,19 @@ local function stepCrosser(walker: Walker, cars: { RuleKit.Car }, now: number, d
 	end
 end
 
--- Moves everyone forward by `dt` seconds. `cars` are all the cars in town, players' and NPCs'.
-function Walkers.step(walkers: { Walker }, cars: { RuleKit.Car }, now: number, dt: number, random: () -> number)
+-- Moves everyone forward by `dt` seconds. `cars` are all the cars in town, players' and NPCs'. With a `pace` above 1,
+-- people waiting for their next crossing wait that many times less, so the town is busier.
+function Walkers.step(
+	walkers: { Walker },
+	cars: { RuleKit.Car },
+	now: number,
+	dt: number,
+	random: () -> number,
+	pace: number?
+)
 	for _, walker in walkers do
 		if walker.crosswalk then
-			stepCrosser(walker, cars, now, dt, random)
+			stepCrosser(walker, cars, now, dt, random, pace or 1)
 		else
 			local path = walker.path :: Path.Path
 			walker.distance += walker.speed * dt

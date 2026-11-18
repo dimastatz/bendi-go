@@ -17,7 +17,12 @@ export type Checkpoint = {
 	dirZ: number,
 	radius: number, -- the car's center must come this close to count
 	turn: boolean,
+	piece: number, -- which piece of the route it's on: piece 1 runs from the first point to the second
 }
+
+-- Where to go at the next place the route turns (PRD-009, requirement 14). At the roundabout, "right" is the first
+-- exit, "straight" the second, and "left" the third.
+export type Turn = { way: "left" | "right" | "straight", roundabout: boolean, distance: number }
 
 export type Route = {
 	nodes: { { number } },
@@ -72,7 +77,15 @@ function LessonRoute.build(nodes: { { number } }): Route
 			local x, z = from[1] + dirX * along, from[2] + dirZ * along
 			local checkpoint: Checkpoint
 			if step == steps and (nextX ~= dirX or nextZ ~= dirZ) then
-				checkpoint = { x = x, z = z, dirX = nextX, dirZ = nextZ, radius = LessonRoute.TURN_RADIUS, turn = true }
+				checkpoint = {
+					x = x,
+					z = z,
+					dirX = nextX,
+					dirZ = nextZ,
+					radius = LessonRoute.TURN_RADIUS,
+					turn = true,
+					piece = index,
+				}
 			else
 				-- Seen from above, the right-hand side of direction (dirX, dirZ) is (-dirZ, dirX).
 				checkpoint = {
@@ -82,6 +95,7 @@ function LessonRoute.build(nodes: { { number } }): Route
 					dirZ = dirZ,
 					radius = LessonRoute.RADIUS,
 					turn = false,
+					piece = index,
 				}
 			end
 			if not nearRoundabout(checkpoint.x, checkpoint.z) then
@@ -108,6 +122,42 @@ function LessonRoute.advance(route: Route, index: number, x: number, z: number):
 		end
 	end
 	return reached + 1
+end
+
+local function isRoundabout(node: { number }): boolean
+	return node[1] == Junctions.CENTER_X and node[2] == Junctions.CENTER_Z
+end
+
+-- The next place the route turns (or goes through the roundabout) that the car at (x, z) hasn't reached yet, while
+-- heading for checkpoint `index`. Nil once there are no more turns before the finish.
+function LessonRoute.nextTurn(route: Route, index: number, x: number, z: number): Turn?
+	local checkpoints, nodes = route.checkpoints, route.nodes
+	local checkpoint = checkpoints[index]
+	if not checkpoint then
+		return nil
+	end
+	-- Start at the point where the car's piece begins: the roundabout has no checkpoints, so the car can already be
+	-- heading for a checkpoint past it. A turn anywhere else at that point was made when its checkpoint was reached.
+	for node = math.max(2, checkpoint.piece), #nodes - 1 do
+		local before, at, after = nodes[node - 1], nodes[node], nodes[node + 1]
+		local inX, inZ = direction(before, at)
+		local outX, outZ = direction(at, after)
+		local roundabout = isRoundabout(at)
+		local turns = inX ~= outX or inZ ~= outZ
+		local past = (x - at[1]) * outX + (z - at[2]) * outZ
+		local done = if roundabout then past > Junctions.OUTER_RADIUS else node == checkpoint.piece
+		if (turns or roundabout) and not done then
+			-- Seen from above, turning right means heading toward (-inZ, inX).
+			local side = inX * outZ - inZ * outX
+			local way: "left" | "right" | "straight" = if side > 0
+				then "right"
+				elseif side < 0 then "left"
+				else "straight"
+			local distance = math.sqrt((at[1] - x) ^ 2 + (at[2] - z) ^ 2)
+			return { way = way, roundabout = roundabout, distance = distance }
+		end
+	end
+	return nil
 end
 
 return LessonRoute

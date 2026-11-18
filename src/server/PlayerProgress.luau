@@ -3,7 +3,8 @@
 -- - If loading fails, the game keeps trying in the background. Until it works, nothing is saved, so a failed load
 --   can never write over a real save. When loading finally works, progress from this session is added to the save.
 -- - If saving fails, the game tries again later.
--- The total star count reaches the client through the player's "Stars" attribute, and "Licensed" is true once the
+-- The total star count reaches the client through the player's "Stars" attribute, "Level" is their level (PRD-009),
+-- and "Licensed" is true once the
 -- player has a driving license.
 
 local DataStoreService = game:GetService("DataStoreService")
@@ -42,6 +43,7 @@ end
 local function showOnPlayer(player: Player, entry: Entry)
 	player:SetAttribute("Stars", entry.data.stars)
 	player:SetAttribute("Licensed", entry.data.license ~= nil)
+	player:SetAttribute("Level", Progress.level(entry.data))
 end
 
 -- True if the player earned anything this session.

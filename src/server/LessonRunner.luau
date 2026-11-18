@@ -1,12 +1,14 @@
--- Runs the driving lessons and the driving test (PRD-006, requirements 2 to 8).
--- The client asks to start or stop a lesson through the BendiLesson remote event. The server checks the lesson is
+-- Runs every driving session: the lessons, the driving test, and the missions (PRD-006 and PRD-009).
+-- The client asks to start or stop a session through the BendiLesson remote event. The server checks the session is
 -- open, moves the player's car to its start, and follows the car through the checkpoints. Stars and tips from the
--- rules are counted on the way, and at the end the result is saved and sent back.
+-- rules are counted on the way, and at the finish line the result is saved and sent back. A mistake never ends a
+-- session early, and stopping one counts as nothing.
 -- Messages to the client, all through BendiLesson:
 -- - "progress", data: the player's saved progress
--- - "lesson", id: a lesson started
--- - "status", checkpoint, stars: the next checkpoint, and the stars earned so far
--- - "finished", id, stars, passed, nextId: a lesson ended, and the lesson it opened, if any
+-- - "offer", id: show a brand-new player the goal card of their first lesson
+-- - "lesson", id: a session started
+-- - "status", checkpoint, stars, count: the next checkpoint, the stars earned so far, and how far the goal is
+-- - "finished", result: a session ended (see Result)
 -- - "stopped": the player went back to free driving
 -- - "license", date: the player just earned their license
 
@@ -30,6 +32,21 @@ local REQUEST_COOLDOWN = 1 -- seconds between a player's start and stop requests
 local remotes = ReplicatedStorage:WaitForChild("Remotes")
 local lessonEvent = remotes:WaitForChild("BendiLesson") :: RemoteEvent
 local tipEvent = remotes:WaitForChild("BendiTip") :: RemoteEvent
+
+-- What the result card shows (PRD-009, requirement 7).
+export type Result = {
+	id: string,
+	stars: number,
+	count: number,
+	need: number?,
+	passed: boolean,
+	medal: number,
+	missed: number,
+	practice: { string },
+	nextId: string?,
+	level: number,
+	levelUp: boolean,
+}
 
 local runs: { [Player]: LessonRun.Run } = {}
 local lastRequest: { [Player]: number } = {}
@@ -55,6 +72,10 @@ local function moveCar(player: Player, pose: { x: number, z: number, dirX: numbe
 	return true
 end
 
+local function sendStatus(player: Player, run: LessonRun.Run)
+	lessonEvent:FireClient(player, "status", run.checkpoint, run.stars, (LessonRun.progress(run)))
+end
+
 local function startLesson(player: Player, id: string)
 	local lesson = Lessons.get(id)
 	local data = PlayerProgress.get(player)
@@ -67,7 +88,7 @@ local function startLesson(player: Player, id: string)
 	end
 	runs[player] = run
 	lessonEvent:FireClient(player, "lesson", id)
-	lessonEvent:FireClient(player, "status", run.checkpoint, run.stars)
+	sendStatus(player, run)
 	tipEvent:FireClient(player, lesson.intro)
 end
 
@@ -82,31 +103,55 @@ local function finish(player: Player, run: LessonRun.Run)
 	runs[player] = nil
 	local lesson = run.lesson
 	local passed = LessonRun.passed(run)
+	local medal = LessonRun.medal(run)
+	local count, need = LessonRun.progress(run)
 	local data = PlayerProgress.get(player)
 	local nextId: string? = nil
 	local newLicense = false
+	local levelBefore = if data then Progress.level(data) else 1
 	if data then
-		nextId = Progress.record(data, lesson.id, run.stars, passed)
+		nextId = Progress.record(data, lesson.id, run.stars, passed, medal)
 		if passed and lesson.isTest and not data.license then
 			Progress.grantLicense(data, os.date("!%Y-%m-%d") :: string)
 			newLicense = true
 		end
 		PlayerProgress.changed(player)
 	end
+	local level = if data then Progress.level(data) else levelBefore
 
-	lessonEvent:FireClient(player, "finished", lesson.id, run.stars, passed, nextId)
-	local values = { stars = run.stars, need = Lessons.PASS_STARS }
-	if lesson.isTest then
-		tipEvent:FireClient(player, if passed then "testPassed" else "testFailed")
-	else
-		tipEvent:FireClient(player, if passed then "lessonPassed" else "lessonTryAgain", values)
-	end
-	if nextId then
+	local result: Result = {
+		id = lesson.id,
+		stars = run.stars,
+		count = count,
+		need = need,
+		passed = passed,
+		medal = medal,
+		missed = #run.missed,
+		practice = LessonRun.practice(run),
+		nextId = nextId,
+		level = level,
+		levelUp = level > levelBefore,
+	}
+	lessonEvent:FireClient(player, "finished", result)
+	if result.levelUp then
+		tipEvent:FireClient(player, "levelUp", { number = level })
+	elseif nextId then
 		tipEvent:FireClient(player, if nextId == "test" then "testUnlocked" else "lessonUnlocked")
 	end
 	if newLicense and data then
+		tipEvent:FireClient(player, "testPassed")
 		lessonEvent:FireClient(player, "license", data.license)
 	end
+end
+
+-- True if anyone is on a busy mission, when the town gets busier for everyone (PRD-009, requirement 12).
+function LessonRunner.isBusy(): boolean
+	for _, run in runs do
+		if run.lesson.busy then
+			return true
+		end
+	end
+	return false
 end
 
 -- Counts a star given or a tip shown to the player, if they're in a lesson.
@@ -115,15 +160,16 @@ function LessonRunner.onEvent(player: Player, event: RuleKit.Event)
 	if not run then
 		return
 	end
-	local before = run.stars
+	local stars, missed = run.stars, #run.missed
 	LessonRun.onEvent(run, event)
-	if run.stars ~= before then
-		lessonEvent:FireClient(player, "status", run.checkpoint, run.stars)
+	if run.stars ~= stars or #run.missed ~= missed then
+		sendStatus(player, run)
 	end
 end
 
--- Starts the first lesson for a brand-new player, once their car is ready (requirement 4). In Studio, DataStores
--- usually can't be reached, so a player whose save didn't load gets the first lesson too.
+-- Shows a brand-new player the goal card of the first lesson, once their car is ready (PRD-006, requirement 4, and
+-- PRD-009, requirement 2). In Studio, DataStores usually can't be reached, so a player whose save didn't load gets
+-- the first lesson too.
 local function onReady(player: Player, status: PlayerProgress.Status)
 	sendProgress(player)
 	if status ~= "new" and not (status == "failed" and RunService:IsStudio()) then
@@ -134,7 +180,7 @@ local function onReady(player: Player, status: PlayerProgress.Status)
 		waited += task.wait(0.5)
 	end
 	if player.Parent and not runs[player] then
-		startLesson(player, Lessons.LIST[1].id)
+		lessonEvent:FireClient(player, "offer", Lessons.LIST[1].id)
 	end
 end
 
@@ -170,7 +216,7 @@ function LessonRunner.start()
 				if run.finished then
 					finish(player, run)
 				else
-					lessonEvent:FireClient(player, "status", run.checkpoint, run.stars)
+					sendStatus(player, run)
 				end
 			end
 		end

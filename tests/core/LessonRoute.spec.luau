@@ -82,4 +82,58 @@ test("advance lets the car skip a couple of checkpoints, but not more", function
 	expectEqual(LessonRoute.advance(route, 4, fourth.x, fourth.z), 5)
 end)
 
+test("every checkpoint knows which piece of the route it's on", function()
+	local route = LessonRoute.build({ { -360, -270 }, { -180, -270 }, { -180, -90 } })
+	for _, checkpoint in route.checkpoints do
+		local expected = if checkpoint.z == -270 + OFFSET or (checkpoint.turn and checkpoint.z == -270) then 1 else 2
+		expectEqual(checkpoint.piece, expected)
+	end
+end)
+
+test("the next turn says which way, and how far", function()
+	local right = LessonRoute.build({ { -270, -90 }, { -180, -90 }, { -180, 0 } })
+	local turn = LessonRoute.nextTurn(right, 1, -270, -90 + OFFSET) :: LessonRoute.Turn
+	expectEqual(turn.way, "right")
+	expectEqual(turn.roundabout, false)
+	expectNear(turn.distance, math.sqrt(90 ^ 2 + OFFSET ^ 2))
+
+	local left = LessonRoute.build({ { -270, -90 }, { -180, -90 }, { -180, -180 } })
+	expectEqual((LessonRoute.nextTurn(left, 1, -260, -85) :: LessonRoute.Turn).way, "left")
+end)
+
+test("once the turn's checkpoint is reached, there are no more turns before the finish", function()
+	local route = LessonRoute.build({ { -270, -90 }, { -180, -90 }, { -180, 0 } })
+	local afterTurn = 0
+	for index, checkpoint in route.checkpoints do
+		if checkpoint.turn then
+			afterTurn = index + 1
+		end
+	end
+	expectEqual(LessonRoute.nextTurn(route, afterTurn, -180 - OFFSET, -80), nil)
+	expectEqual(LessonRoute.nextTurn(route, #route.checkpoints + 1, -180, 0), nil)
+end)
+
+test("at the roundabout, turns are exits, until the car has left it", function()
+	local center = { Junctions.CENTER_X, Junctions.CENTER_Z }
+	local route = LessonRoute.build({ { 30, 90 }, center, { 180, 270 } })
+	local turn = LessonRoute.nextTurn(route, 1, 40, 95) :: LessonRoute.Turn
+	expectEqual(turn.way, "right")
+	expectEqual(turn.roundabout, true)
+
+	-- The first checkpoint past the roundabout, while the car is still going around it, and after it left.
+	local past = 0
+	for index, checkpoint in route.checkpoints do
+		if checkpoint.piece == 2 and past == 0 then
+			past = index
+		end
+	end
+	expectEqual((LessonRoute.nextTurn(route, past, 195, 105) :: LessonRoute.Turn).roundabout, true)
+	expectEqual(LessonRoute.nextTurn(route, past, 175, 90 + Junctions.OUTER_RADIUS + 10), nil)
+
+	local straight = LessonRoute.build({ { 30, 90 }, center, { 330, 90 } })
+	expectEqual((LessonRoute.nextTurn(straight, 1, 40, 95) :: LessonRoute.Turn).way, "straight")
+	local back = LessonRoute.build({ { 30, 90 }, center, { 180, -90 } })
+	expectEqual((LessonRoute.nextTurn(back, 1, 40, 95) :: LessonRoute.Turn).way, "left")
+end)
+
 TestKit.finish()
